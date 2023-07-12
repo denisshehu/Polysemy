@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ElementTree
 from gensim.models import KeyedVectors
 import yaml
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # Depth 0
 project_directory = os.path.dirname(os.path.abspath(__file__))

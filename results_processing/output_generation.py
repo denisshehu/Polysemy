@@ -13,7 +13,6 @@ def construct_filename(**kwargs):
             else:
                 filename += f'{key}{value}_'
 
-    filename = filename[:-1]
     return filename
 
 
@@ -26,21 +25,21 @@ def generate_output(input, n_neighbors=50, max_dimension=2, n_steps=10, batch_si
     filename = construct_filename(function=function, n=n, q=n_query_points,
                                   k=n_neighbors, d=max_dimension, s=n_steps, seed=seed)
 
-    input_path = os.path.join(results_directory, f'{filename}_input.txt')
+    input_path = os.path.join(results_directory, f'{filename}input.txt')
     save_ndarray(input, input_path)
 
     if query_points is not None:
-        query_points_path = os.path.join(results_directory, f'{filename}_query_points.txt')
+        query_points_path = os.path.join(results_directory, f'{filename}query_points.txt')
         save_ndarray(query_points, query_points_path)
         p_ = f'-p \"{query_points_path}\"'
     else:
         p_ = ''
 
-    output_path = os.path.join(results_directory, f'{filename}_output.csv')
+    output_path = os.path.join(results_directory, f'{filename}output.csv')
 
     command = f'start cmd /{keep_} \"cd \"{tardis_directory}\" & \"{activate_path}\" & ' \
               f'python cli.py \"{input_path}\" {p_} -k {n_neighbors} -d {max_dimension} --num-steps {n_steps} -b {n} ' \
               f'{q_} {seed_} > \"{output_path}\"\"'
-    # os.system(command)
+    os.system(command)
 
-    return filename
+    return output_path
