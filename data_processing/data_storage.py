@@ -33,26 +33,15 @@ def load_yaml(file_path):
     return data
 
 
-def construct_filename(**kwargs):
-    filename = ''
-    for key, value in kwargs.items():
-        if value is not None:
-            if isinstance(value, float):
-                filename += f'{key}{value:.1f}_'
-            else:
-                filename += f'{key}{value}_'
-    filename = filename[:-1] + '.txt'
-    return filename
+def save_ndarray(data, file_path):
+    np.savetxt(file_path, data)
 
 
-def save_ndarray(ndarray, directory, **kwargs):
-    filename = construct_filename(**kwargs)
-    file_path = os.path.join(directory, filename)
-    np.savetxt(file_path, ndarray)
+def load_ndarray(file_path):
+    data = np.loadtxt(file_path)
+    return data
 
 
-def load_ndarray(directory, **kwargs):
-    filename = construct_filename(**kwargs)
-    file_path = os.path.join(directory, filename)
-    ndarray = np.loadtxt(file_path)
-    return ndarray
+def load_csv(file_path):
+    data = pd.read_csv(file_path)
+    return data
