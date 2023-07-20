@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import xml.etree.ElementTree as ElementTree
+from nltk.corpus import wordnet as wn
 from gensim.models import KeyedVectors
 import yaml
 import pandas as pd
@@ -26,6 +27,7 @@ fixed_sco_corpus_path = os.path.join(corpora_directory, 'sco_fixed.xml')
 
 # Depth 3 (embeddings)
 gn_embeddings_path = os.path.join(embeddings_directory, 'gn.bin')
+normalized_gn_embeddings_path = os.path.join(embeddings_directory, 'gn_normalized.bin')
 
 # Depth 3 (senses)
 sc_senses_path = os.path.join(senses_directory, 'sc.txt')
@@ -33,10 +35,18 @@ sco_senses_path = os.path.join(senses_directory, 'sco.txt')
 
 # Depth 3 (word_collections)
 sc_word_collection_path = os.path.join(word_collections_directory, 'sc.yaml')
+normalized_sc_word_collection_path = os.path.join(word_collections_directory, 'sc_normalized.yaml')
 sco_word_collection_path = os.path.join(word_collections_directory, 'sco.yaml')
+normalized_sco_word_collection_path = os.path.join(word_collections_directory, 'sco_normalized.yaml')
 
 sc_paths = (sc_corpus_path, gn_embeddings_path, sc_senses_path, sc_word_collection_path)
+normalized_sc_paths = (
+    sc_corpus_path, normalized_gn_embeddings_path, sc_senses_path, normalized_sc_word_collection_path
+)
 sco_paths = (fixed_sco_corpus_path, gn_embeddings_path, sco_senses_path, sco_word_collection_path)
+normalized_sco_paths = (
+    fixed_sco_corpus_path, normalized_gn_embeddings_path, sco_senses_path, normalized_sco_word_collection_path
+)
 
 tardis_directory = os.path.join(os.path.dirname(project_directory), 'TARDIS2', 'tardis')
 activate_path = os.path.join(os.path.dirname(tardis_directory), 'venv', 'Scripts', 'activate.bat')

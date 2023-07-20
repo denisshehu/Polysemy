@@ -6,6 +6,10 @@ def load_xml(file_path):
     return element_tree
 
 
+def save_bin(data, file_path):
+    data.save_word2vec_format(file_path, binary=True)
+
+
 def load_bin(file_path):
     keyed_vectors = KeyedVectors.load_word2vec_format(file_path, binary=True)
     return keyed_vectors

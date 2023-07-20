@@ -16,22 +16,11 @@ class WordCollection:
     def words(self):
         return self._words
 
-    @property
-    def corpus_path(self):
-        return self._corpus_path
-
-    @property
-    def embeddings_path(self):
-        return self._embeddings_path
-
-    @property
-    def senses_path(self):
-        return self._senses_path
-
     def extract(self):
         self._extract_corpus()
         self._extract_embeddings()
         self._extract_senses()
+        self._extra()
 
     def _extract_corpus(self):
         tree = load_xml(self._corpus_path)
@@ -41,10 +30,11 @@ class WordCollection:
     def _extract_subtree(self, element):
         if element.tag == 'instance':
             lemma = element.attrib['lemma']
+            pos = element.attrib['pos']
             if lemma in self._words:
-                self._words[lemma].increment_count()
+                self._words[lemma].update_pos_counts(pos)
             else:
-                self._words[lemma] = Word(lemma)
+                self._words[lemma] = Word(lemma, pos)
 
         for child in element:
             self._extract_subtree(child)
@@ -62,14 +52,17 @@ class WordCollection:
         senses = load_txt(self._senses_path)
 
         for sense in senses:
-            value = sense.split(' ')[1][:-1]
-            key = value.split('%')[0]
-            sense_counts = self._words[key].sense_counts.copy()
-            if value in sense_counts:
-                sense_counts[value] += 1
-            else:
-                sense_counts[value] = 1
-            self._words[key].sense_counts = sense_counts
+            values = sense.split(' ')[1:]
+            for value in values:
+                value = value.replace('\n', '')
+                key = value.split('%')[0]
+                self._words[key].update_sense_counts(value)
+
+    def _extra(self):
+        for word in self._words.values():
+            word.set_count()
+            word.set_n_senses()
+            word.set_n_total_senses()
 
     def save(self):
         save_yaml(self, self._word_collection_path)
