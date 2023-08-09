@@ -5,18 +5,13 @@ fix_sco_corpus()
 
 normalize_embeddings(gn_embeddings_path, normalized_gn_embeddings_path)
 
-sc_word_collection = WordCollection(sc_paths)
-sc_word_collection.extract()
-sc_word_collection.save()
+sc_word_collection = WordCollection(sc_corpus_path, gn_embeddings_path, sc_senses_path, sc_word_collection_path)
 
-normalized_sc_word_collection = WordCollection(normalized_sc_paths)
-normalized_sc_word_collection.extract()
-normalized_sc_word_collection.save()
+normalized_sc_word_collection = WordCollection(sc_corpus_path, normalized_gn_embeddings_path, sc_senses_path,
+                                               normalized_sc_word_collection_path)
 
-sco_word_collection = WordCollection(sco_paths)
-sco_word_collection.extract()
-sco_word_collection.save()
+sco_word_collection = WordCollection(fixed_sco_corpus_path, gn_embeddings_path, sco_senses_path,
+                                     sco_word_collection_path)
 
-normalized_sco_word_collection = WordCollection(normalized_sco_paths)
-normalized_sco_word_collection.extract()
-normalized_sco_word_collection.save()
+normalized_sco_word_collection = WordCollection(fixed_sco_corpus_path, normalized_gn_embeddings_path, sco_senses_path,
+                                                normalized_sco_word_collection_path)

@@ -4,19 +4,27 @@ from data_processing.data_storage import *
 
 class WordCollection:
 
-    def __init__(self, paths):
-        corpus_path, embeddings_path, senses_path, word_collection_path = paths
-        self._words = dict()
+    def __init__(self, corpus_path, embeddings_path, senses_path, word_collection_path, words=None):
+        self._words = dict() if words is None else words
         self._corpus_path = corpus_path
         self._embeddings_path = embeddings_path
         self._senses_path = senses_path
         self._word_collection_path = word_collection_path
 
+        if words is None:
+            self._extract()
+            if self._word_collection_path is not None:
+                self._save()
+
     @property
     def words(self):
         return self._words
 
-    def extract(self):
+    @words.setter
+    def words(self, words):
+        self._words = words
+
+    def _extract(self):
         self._extract_corpus()
         self._extract_embeddings()
         self._extract_senses()
@@ -64,5 +72,60 @@ class WordCollection:
             word.set_n_senses()
             word.set_n_total_senses()
 
-    def save(self):
+    def _save(self):
         save_yaml(self, self._word_collection_path)
+
+    def filter_by_membership(self, attribute, values_list, negate=False):
+        words = dict()
+
+        for word in self._words.values():
+            value = getattr(word, attribute)
+            if values_list == [None]:
+                if (not negate and value is None) or (negate and value is not None):
+                    words[word.value] = word
+            else:
+                if (not negate and value in values_list) or (negate and value not in values_list):
+                    words[word.value] = word
+
+        return WordCollection(self._corpus_path, self._embeddings_path, self._senses_path, self._word_collection_path,
+                              words)
+
+    def filter_by_range(self, attribute, min_value=None, max_value=None):
+        words = dict()
+
+        for word in self._words.values():
+            value = getattr(word, attribute)
+
+            if None not in (min_value, max_value):
+                if min_value <= value <= max_value:
+                    words[word.value] = word
+            elif min_value is not None:
+                if value >= min_value:
+                    words[word.value] = word
+            elif max_value is not None:
+                if value <= max_value:
+                    words[word.value] = word
+
+        return WordCollection(self._corpus_path, self._embeddings_path, self._senses_path, self._word_collection_path,
+                              words)
+
+    def get_words_with_embedding(self):
+        words_with_embedding = self.filter_by_membership('embedding', [None], True)
+        return words_with_embedding
+
+    def get_monosemes(self, n=None, use_n_total_senses=True):
+        words_with_embedding = self.get_words_with_embedding()
+        attribute = 'n_total_senses' if use_n_total_senses else 'n_senses'
+        monosemes = words_with_embedding.filter_by_range(attribute, max_value=1)
+        if n is not None:
+            monosemes.words = dict(sorted(monosemes.words.items(), key=lambda item: item[1].count, reverse=True)[:n])
+        return monosemes
+
+    def get_polysemes(self, n=None, use_n_total_senses=True):
+        words_with_embedding = self.get_words_with_embedding()
+        attribute = 'n_total_senses' if use_n_total_senses else 'n_senses'
+        polysemes = words_with_embedding.filter_by_range(attribute, min_value=2)
+        if n is not None:
+            polysemes.words = dict(sorted(
+                polysemes.words.items(), key=lambda item: getattr(item[1], attribute), reverse=True)[:n])
+        return polysemes

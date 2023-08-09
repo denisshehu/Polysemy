@@ -63,7 +63,4 @@ class Word:
         self._n_senses = len(self._sense_counts)
 
     def set_n_total_senses(self):
-        n_total_senses = 0
-        for pos in self._pos_counts:
-            n_total_senses += len(wn.synsets(self._value, getattr(wn, pos)))
-        self._n_total_senses = n_total_senses
+        self._n_total_senses = len(wn.synsets(self._value))

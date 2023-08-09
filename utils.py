@@ -39,14 +39,5 @@ normalized_sc_word_collection_path = os.path.join(word_collections_directory, 's
 sco_word_collection_path = os.path.join(word_collections_directory, 'sco.yaml')
 normalized_sco_word_collection_path = os.path.join(word_collections_directory, 'sco_normalized.yaml')
 
-sc_paths = (sc_corpus_path, gn_embeddings_path, sc_senses_path, sc_word_collection_path)
-normalized_sc_paths = (
-    sc_corpus_path, normalized_gn_embeddings_path, sc_senses_path, normalized_sc_word_collection_path
-)
-sco_paths = (fixed_sco_corpus_path, gn_embeddings_path, sco_senses_path, sco_word_collection_path)
-normalized_sco_paths = (
-    fixed_sco_corpus_path, normalized_gn_embeddings_path, sco_senses_path, normalized_sco_word_collection_path
-)
-
 tardis_directory = os.path.join(os.path.dirname(project_directory), 'TARDIS2', 'tardis')
 activate_path = os.path.join(os.path.dirname(tardis_directory), 'venv', 'Scripts', 'activate.bat')
