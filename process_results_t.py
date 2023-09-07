@@ -1,17 +1,12 @@
-from data_processing.sample_generation import *
-from results_processing.output_generation import *
-from results_processing.a import *
+from data_processing.sample_generation_t import *
+from results_processing.main_t import *
 
-n_values = [10 ** (i + 1) for i in range(3)]
-d = 2
+n = 10000
+d_values = [2, 3]
 r = 1
 seed = 1
 
-for n in n_values:
+for d in d_values:
     input = sample_from_sphere(n=n, d=d, r=r, seed=seed)
 
-    output_path = generate_output(input, n_query_points=1, seed=2)
-    try:
-        visualize_output(output_path)
-    except:
-        pass
+    get_results(query=1000, input=input, max_dimension=d, seed=2)
