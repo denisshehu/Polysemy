@@ -14,13 +14,13 @@ seed = 1
 
 for d in d_values:
     query_regular = np.zeros((1, D))
-    input_regular = sample_from_cube(n=n, d=d, D=D, side_length=side_length, seed=seed)
+    input_regular = sample_from_cube(n=n, d_intrinsic=d, d_features=D, side_length=side_length, seed=seed)
     input_regular = np.concatenate((input_regular, query_regular))
 
     for max_d in range(d - 10, d + 11):
         max_d = max(max_d, 0)
         if max_d == 11:
-            get_results(query_regular, input_regular, n_neighbors=k, max_dimension=max_d, seed=seed,
+            get_results(query_regular, input_regular, n_neighbors_euclidicity=k, max_dimension=max_d, seed=seed,
                         filename_prefix=f'regular_trued{d}', keep_terminal_open=False)
 
     query_singularity = np.zeros((1, D))

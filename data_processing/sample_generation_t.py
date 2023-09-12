@@ -5,52 +5,42 @@ def set_seed(seed):
     np.random.seed(seed)
 
 
-def sample_from_annulus(n, d, R, r, seed):
+def stack_dimensions(data, d_intrinsic, d_features):
+    return np.hstack((data, np.zeros(shape=(data.shape[0], d_features - d_intrinsic))))
+
+
+def sample_from_annulus(n, d_intrinsic, d_features, r_max, r_min, seed):
     data = []
 
     set_seed(seed)
 
     while len(data) < n:
-        point = np.random.uniform(low=-R, high=R, size=d)
+        point = np.random.uniform(low=-r_max, high=r_max, size=d_intrinsic)
         norm = np.linalg.norm(point)
-        if r <= norm <= R:
+        if r_min <= norm <= r_max:
             data.append(point)
 
     data = np.array(data)
+    data = stack_dimensions(data, d_intrinsic, d_features)
     return data
 
 
-def sample_from_ball(n, d, r, seed):
-    return sample_from_annulus(n=n, d=d, R=r, r=0.0, seed=seed)
+def sample_from_ball(n, d_intrinsic, d_features, r, seed):
+    return sample_from_annulus(n=n, d_intrinsic=d_intrinsic, d_features=d_features, r_max=r, r_min=0, seed=seed)
 
 
-def sample_from_cube(n, d, D, side_length, seed):
+def sample_from_sphere(n, d_intrinsic, d_features, r, seed):
     set_seed(seed)
 
-    half_length = side_length / 2
-    data = np.random.uniform(low=-half_length, high=half_length, size=(n, d))
-    data = np.hstack((data, np.zeros(shape=(len(data), D - d))))
-    return data
-
-
-def sample_from_sphere(n, d, r, seed):
-    set_seed(seed)
-
-    data = np.random.randn(n, d)
+    data = np.random.randn(n, d_intrinsic)
     data = r * data / np.sqrt(np.sum(data ** 2, 1)[:, None])
+    data = stack_dimensions(data, d_intrinsic, d_features)
     return data
 
 
-def sample_from_intersecting_spheres(n1, d1, r1, seed1, n2, d2, r2, seed2):
-    sphere1 = sample_from_sphere(n=n1, d=d1, r=r1, seed=seed1)
-    sphere2 = sample_from_sphere(n=n2, d=d2, r=r2, seed=seed2)
-
-    if d1 > d2:
-        zeros = np.zeros(shape=(sphere2.shape[0], d1 - d2))
-        sphere2 = np.hstack((sphere2, zeros))
-    elif d1 < d2:
-        zeros = np.zeros(shape=(sphere1.shape[0], d2 - d1))
-        sphere1 = np.hstack((sphere1, zeros))
+def sample_from_intersecting_spheres(n1, d_intrinsic1, r1, seed1, n2, d_intrinsic2, r2, seed2, d_features):
+    sphere1 = sample_from_sphere(n=n1, d_intrinsic=d_intrinsic1, d_features=d_features, r=r1, seed=seed1)
+    sphere2 = sample_from_sphere(n=n2, d_intrinsic=d_intrinsic2, d_features=d_features, r=r2, seed=seed2)
 
     for i in range(len(sphere1)):
         sphere1[i][0] -= r1 + r2
@@ -59,7 +49,7 @@ def sample_from_intersecting_spheres(n1, d1, r1, seed1, n2, d2, r2, seed2):
     return data
 
 
-def sample_from_pinched_torus(n, R, r_max, r_min, seed):
+def sample_from_pinched_torus(n, d_features, r_max, r_min_max, r_min_min, seed):
     data = []
 
     set_seed(seed)
@@ -73,64 +63,80 @@ def sample_from_pinched_torus(n, R, r_max, r_min, seed):
         v = thetas[i]
 
         if u <= pi:
-            r = r_max * (1 - u / pi) + r_min * u / pi
+            r = r_min_max * (1 - u / pi) + r_min_min * u / pi
         else:
-            r = r_min * (1 - (u - pi) / pi) + r_max * (u - pi) / pi
+            r = r_min_min * (1 - (u - pi) / pi) + r_min_max * (u - pi) / pi
 
-        x = (R + r * np.cos(v)) * np.cos(u)
-        y = (R + r * np.cos(v)) * np.sin(u)
+        x = (r_max + r * np.cos(v)) * np.cos(u)
+        y = (r_max + r * np.cos(v)) * np.sin(u)
         z = r * np.sin(v)
 
         data.append(np.array([x, y, z]))
 
     data = np.array(data)
+    data = stack_dimensions(data, data.shape[1], d_features)
     return data
 
 
-def sample_from_pinched_surface(n, d, r, pinch_h, pinch_r, seed):
+def sample_from_pinched_surface(n, d_intrinsic, d_features, r, pinch_h, pinch_r, seed):
     data = []
 
     set_seed(seed)
 
     while len(data) < n:
-        point = np.random.uniform(low=-r, high=r, size=d)
+        point = np.random.uniform(low=-r, high=r, size=(d_intrinsic - 1))
         norm = np.linalg.norm(point)
         if norm <= r:
             if norm <= pinch_r:
                 height = (1 - norm / pinch_r) * pinch_h
                 point = np.append(point, height)
             else:
-                point = np.append(point, 0.0)
+                point = np.append(point, 0)
             data.append(point)
 
     data = np.array(data)
+    data = stack_dimensions(data, d_intrinsic, d_features)
     return data
 
 
-def sample_from_singularity(n, d, D, base_length, height, seed):
+def sample_from_cube(n, d_intrinsic, d_features, side_length, seed):
+    set_seed(seed)
+
+    half_length = side_length / 2
+    data = np.random.uniform(low=-half_length, high=half_length, size=(n, d_intrinsic))
+    data = stack_dimensions(data, d_intrinsic, d_features)
+    return data
+
+
+def sample_from_pyramid(n, d_intrinsic, d_features, base_length, height, seed, is_upside_down):
     data = []
 
     set_seed(seed)
 
-    heights = np.random.uniform(low=0.0, high=height, size=n)
+    heights = np.random.uniform(low=0, high=height, size=n)
 
-    for h in heights:
-        side_length = (1 - h) * base_length
+    for height_ in heights:
+        side_length = height_ * base_length if is_upside_down else (height - height_) * base_length
         half_length = side_length / 2
-        point = np.random.uniform(low=-half_length, high=half_length, size=(d - 1))
-        point = np.append(point, h)
+        point = np.random.uniform(low=-half_length, high=half_length, size=(d_intrinsic - 1))
+        point = np.append(point, height_)
         data.append(point)
-
-    heights = np.random.uniform(low=0.0, high=height, size=n)
-
-    for h in heights:
-        side_length = h * base_length
-        half_length = side_length / 2
-        point = np.random.uniform(low=-half_length, high=half_length, size=(d - 1))
-        point = np.append(point, height + h)
-        data.append(point)
-
-    data = np.hstack((data, np.zeros(shape=(len(data), D - d))))
 
     data = np.array(data)
+    data = stack_dimensions(data, d_intrinsic, d_features)
+    return data
+
+
+# TODO: does not work for pyramids of different dimensions
+def sample_from_singularity(n1, d_intrinsic1, base_length1, height1, seed1,
+                            n2, d_intrinsic2, base_length2, height2, seed2, d_features):
+    pyramid1 = sample_from_pyramid(n=n1, d_intrinsic=d_intrinsic1, d_features=d_features, base_length=base_length1,
+                                   height=height1, seed=seed1, is_upside_down=False)
+    pyramid2 = sample_from_pyramid(n=n2, d_intrinsic=d_intrinsic2, d_features=d_features, base_length=base_length2,
+                                   height=height2, seed=seed2, is_upside_down=True)
+
+    for i in range(len(pyramid2)):
+        pyramid2[i][d_intrinsic2 - 1] += height1
+
+    data = np.vstack((pyramid1, pyramid2))
     return data

@@ -17,11 +17,11 @@ for k in k_values:
         filename_prefix = f'{estimator}_{d}'
 
         query = np.zeros((1, actual_dimension))
-        input = sample_from_cube(n=n, d=d, side_length=side_length, seed=seed)
+        input = sample_from_cube(n=n, d_intrinsic=d, side_length=side_length, seed=seed)
         input = np.hstack((input, np.zeros(shape=(input.shape[0], actual_dimension - d))))
         input = np.concatenate((input, query))
 
-        get_results(query, input, n_neighbors=k, max_dimension=max_dimension, seed=seed,
+        get_results(query, input, n_neighbors_euclidicity=k, max_dimension=max_dimension, seed=seed,
                     filename_prefix=filename_prefix, keep_terminal_open=False)
 
 winsound.Beep(500, 3000)

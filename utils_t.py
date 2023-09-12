@@ -9,6 +9,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 import re
+from sklearn.neighbors import KDTree
+import skdim
+from sklearn.neighbors import LocalOutlierFactor
 
 # nltk.download('wordnet')
 
@@ -45,11 +48,17 @@ sco_word_collection_path = os.path.join(word_collections_directory, 'sco.yaml')
 normalized_sco_word_collection_path = os.path.join(word_collections_directory, 'sco_normalized.yaml')
 
 # Depth 2 (results)
+intrinsic_dimension_directory = os.path.join(results_directory, 'intrinsic_dimension')
+
 inputs_directory = os.path.join(results_directory, 'inputs')
 queries_directory = os.path.join(results_directory, 'queries')
 outputs_directory = os.path.join(results_directory, 'outputs')
 results_subdirectory = os.path.join(results_directory, 'results')
 visualizations_directory = os.path.join(results_directory, 'visualizations')
+
+# Depth 3 (intrinsic_dimension)
+before_processing_directory = os.path.join(intrinsic_dimension_directory, 'before_processing')
+after_processing_directory = os.path.join(intrinsic_dimension_directory, 'after_processing')
 
 # Depth 3 (visualizations)
 dimension_directory = os.path.join(visualizations_directory, 'dimension')
