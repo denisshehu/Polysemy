@@ -1,6 +1,3 @@
-from data_processing.data_storage import *
-
-
 def fix_sco_corpus():
     data = load_txt(sco_corpus_path)
     data.insert(1, '<root>\n')

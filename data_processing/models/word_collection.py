@@ -1,5 +1,4 @@
 from data_processing.models.word import *
-from data_processing.data_storage import *
 
 
 class WordCollection:
