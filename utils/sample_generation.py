@@ -1,3 +1,5 @@
+import numpy as np
+
 from utils.imports import *
 
 
@@ -63,15 +65,32 @@ def sample_from_annulus(n, intrinsic_dimension, max_r, min_r, seed=None, spatial
     return points
 
 
-def sample_from_intersecting_spheres(n1, intrinsic_dimension1, r1, n2, intrinsic_dimension2, r2, spatial_dimension=None,
+def sample_from_intersecting_spheres(n1, intrinsic_dimension1, r1, n2, intrinsic_dimension2, r2, spatial_dimension,
                                      seed1=None, seed2=None):
     sphere1 = sample_from_sphere(n1, intrinsic_dimension1, r1, seed1, spatial_dimension)
     sphere2 = sample_from_sphere(n2, intrinsic_dimension2, r2, seed2, spatial_dimension)
 
     for point in sphere1:
-        point[0] -= (r1 + r2)
+        point[0] -= r1
+    for point in sphere2:
+        point[0] += r2
 
     points = np.row_stack((sphere1, sphere2))
+    return points
+
+
+def sample_from_intersecting_planes(n1, r1, n2, r2, seed1=None, seed2=None, spatial_dimension=None):
+    ball1 = sample_from_ball(n1, 2, r1, seed1, 3)
+    ball2 = sample_from_ball(n2, 2, r2, seed2, 3)
+
+    angle = np.pi / 2
+    rotation_matrix = np.array([[1, 0, 0],
+                                [0, np.cos(angle), -np.sin(angle)],
+                                [0, np.sin(angle), np.cos(angle)]])
+    rotated_ball2 = np.dot(ball2, rotation_matrix.T)
+
+    points = np.row_stack((ball1, rotated_ball2))
+    points = add_extra_dimensions(points, spatial_dimension)
     return points
 
 # def sample_from_pinched_torus(n, spacial_dimension, large_r, small_max_r, small_min_r, seed):

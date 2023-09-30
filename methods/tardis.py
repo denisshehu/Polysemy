@@ -1,21 +1,15 @@
-import os
-import time
-
-from methods.common_functions import save_point_cloud
-from utils.utils import save_ndarray, load_csv
-from utils.utils_t import results_directory, tardis_directory, activate_path
+from utils.main import *
 
 
-def execute_tardis(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename_prefix=None,
-                   keep_terminal_open=False):
-    output_path = execute(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename_prefix,
-                          keep_terminal_open)
+def execute(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename_prefix=None, keep_terminal_open=False):
+    output_path = _execute(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename_prefix,
+                           keep_terminal_open)
     update_point_cloud(point_cloud, output_path)
     save_point_cloud(point_cloud, filename_prefix)
     # visualize
 
 
-def execute(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename_prefix, keep_terminal_open):
+def _execute(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename_prefix, keep_terminal_open):
     points = point_cloud.points
     query_points = point_cloud.get_query_points()
 

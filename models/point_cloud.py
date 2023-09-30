@@ -13,10 +13,11 @@ class PointCloud:
         self._points = points
         self._tree = KDTree(points)
 
+        identifiers = range(n_queries)
         n_points = points.shape[0]
         indices = np.random.choice(a=n_points, size=n_queries, replace=False)
         query_points = points[indices]
-        queries = [Query(point) for point in query_points]
+        queries = [Query(identifier, point) for identifier, point in zip(identifiers, query_points)]
 
         self._queries = queries
 
@@ -24,7 +25,12 @@ class PointCloud:
         self._points = points
         self._tree = KDTree(points)
 
-        queries = [Query(point) for point in query_points] if len(query_points.shape) != 1 else [Query(query_points)]
+        n_query_points = query_points.shape[0]
+        identifiers = range(n_query_points)
+        if len(query_points.shape) != 1:
+            queries = [Query(identifier, point) for identifier, point in zip(identifiers, query_points)]
+        else:
+            queries = [Query(0, query_points)]
 
         self._queries = queries
 
@@ -32,8 +38,10 @@ class PointCloud:
         embeddings = gensim.downloader.load(model_name)
         embeddings.unit_normalize_all()
 
+        identifiers = range(len(query_keys))
         query_points = [embeddings[key] for key in query_keys]
-        queries = [Query(point, key) for point, key in zip(query_points, query_keys)]
+        queries = [Query(identifier, point, key) for identifier, point, key in
+                   zip(identifiers, query_points, query_keys)]
 
         point_keys = set()
         for point in query_points:
@@ -44,23 +52,6 @@ class PointCloud:
         self._points = points
         self._tree = KDTree(points)
         self._queries = queries
-
-    # def fasttext_constructor(self, embeddings_path, query_keys, neighborhood_size):
-    #     embeddings = FastText.load_fasttext_format(embeddings_path).wv
-    #     embeddings.unit_normalize_all()
-    #
-    #     query_points = [embeddings[key] for key in query_keys]
-    #     queries = [Query(point, key) for point, key in zip(query_points, query_keys)]
-    #
-    #     point_keys = set()
-    #     for point in query_points:
-    #         most_similar = embeddings.similar_by_vector(vector=point, topn=(neighborhood_size + 1))
-    #         point_keys.update([key for key, similarity in most_similar])
-    #     points = np.array([embeddings[key] for key in point_keys])
-    #
-    #     self._points = points
-    #     self._tree = KDTree(points)
-    #     self._queries = queries
 
     @property
     def points(self):
@@ -118,6 +109,27 @@ class PointCloud:
                         point_annuli.append(self._get_annulus(point, max_r, min_r))
 
             annuli.append(point_annuli)
+        return annuli
+
+    def get_annuli2(self, neighborhood_size, proportion, n_steps):
+        distances, indices = self._get_distances_and_indices(neighborhood_size)
+        neighborhoods_radius = [d[-1] for d in distances]
+
+        annuli = list()
+        for point, neighborhood_radius in zip(self.get_query_points(), neighborhoods_radius):
+            if n_steps == 1:
+                min_r = proportion * neighborhood_radius
+                annuli.append([self._get_annulus(point, neighborhood_radius, min_r)])
+            else:
+                min_neighborhood_radius = 0.75 * neighborhood_radius
+
+                point_annuli = list()
+                for max_r in np.linspace(start=min_neighborhood_radius, stop=neighborhood_radius, num=n_steps):
+                    min_r = proportion * max_r
+                    point_annuli.append(self._get_annulus(point, max_r, min_r))
+
+                annuli.append(point_annuli)
+
         return annuli
 
     def process_intrinsic_dimension_estimates(self):

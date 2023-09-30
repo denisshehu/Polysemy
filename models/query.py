@@ -3,7 +3,8 @@ from utils.main import *
 
 class Query:
 
-    def __init__(self, point, word=None):
+    def __init__(self, identifier, point, word=None):
+        self._identifier = identifier
         self._point = point
 
         self._initial_intrinsic_dimension_estimates = dict()
@@ -20,6 +21,10 @@ class Query:
 
         self._word = word
         self._n_senses = len(wn.synsets(word)) if word is not None else None
+
+    @property
+    def identifier(self):
+        return self._identifier
 
     @property
     def point(self):
@@ -48,6 +53,10 @@ class Query:
     @property
     def classification(self):
         return self._classification
+
+    @classification.setter
+    def classification(self, classification):
+        self._classification = classification
 
     # @property
     # def euclidicity_estimates(self):
