@@ -1,17 +1,13 @@
 from utils.main import *
 
 
-def calculate(point_cloud, distance_metric, neighborhood_size, filename_prefix=None):
+def calculate(point_cloud, neighborhood_size, distance_metric='w', filename_prefix=None):
     """
     :param distance_metric: 'w' for wasserstein norm, 's' for square distance, and 'm' for max distance.
     """
     calculate_in_parallel(point_cloud, distance_metric, neighborhood_size)
-
-    # for query in point_cloud.queries:
-    #     query.topological_polysemy = results[query.identifier]
     # save_point_cloud(point_cloud, filename_prefix)
     # visualize
-    # print('Topological polysemy calculated.')
 
 
 def calculate_in_parallel(point_cloud, distance_metric, neighborhood_size):

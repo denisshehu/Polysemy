@@ -1,10 +1,10 @@
 from utils.main import *
 
 
-def estimate_intrinsic_dimension(point_cloud, min_neighborhood_size, max_neighborhood_size, filename_prefix=None):
+def estimate(point_cloud, min_neighborhood_size, max_neighborhood_size, filename_prefix=None):
     get_initial_estimates(point_cloud, min_neighborhood_size, max_neighborhood_size)
     point_cloud.process_intrinsic_dimension_estimates()
-    save_point_cloud(point_cloud, filename_prefix)
+    # save_point_cloud(point_cloud, filename_prefix)
     # visualize
 
 

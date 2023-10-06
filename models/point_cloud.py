@@ -87,46 +87,47 @@ class PointCloud:
         neighborhoods = self._points[indices]
         return neighborhoods
 
-    def _get_annulus(self, point, max_r, min_r):
-        large_ball_indices = self._tree.query_radius(X=point.reshape(1, -1), r=max_r)[0]
-        small_ball_indices = self._tree.query_radius(X=point.reshape(1, -1), r=min_r)[0]
+    def _get_annulus(self, point, s, r):
+        large_ball_indices = self._tree.query_radius(X=point.reshape(1, -1), r=s)[0]
+        small_ball_indices = self._tree.query_radius(X=point.reshape(1, -1), r=r)[0]
         annulus_indices = np.setdiff1d(ar1=large_ball_indices, ar2=small_ball_indices)
 
-        annulus = (self._points[annulus_indices], max_r, min_r)
+        annulus = (self._points[annulus_indices], s, r)
+        with open('C:\\Users\\its_d\\Desktop\\polysemy.txt', 'a') as file:
+            file.write(np.array2string(annulus[0]))
+            file.write('\n\n')
         return annulus
 
     def get_annuli(self, neighborhood_size, n_steps):
         distances, indices = self._get_distances_and_indices(neighborhood_size)
         radii = [[d[0], d[neighborhood_size // 3 - 1], d[-1]] for d in distances]
+        with open('C:\\Users\\its_d\\Desktop\\polysemy.txt', 'w') as file:
+            file.write(f'{str(radii)}\n')
 
         annuli = list()
         for point, point_radii in zip(self.get_query_points(), radii):
             point_annuli = list()
 
-            for max_r in np.linspace(start=point_radii[1], stop=point_radii[2], num=n_steps):
-                for min_r in np.linspace(start=point_radii[0], stop=point_radii[1], num=n_steps):
-                    if min_r < max_r:
-                        point_annuli.append(self._get_annulus(point, max_r, min_r))
+            for s in np.linspace(start=point_radii[1], stop=point_radii[2], num=n_steps):
+                for r in np.linspace(start=point_radii[0], stop=point_radii[1], num=n_steps):
+                    if r < s:
+                        point_annuli.append(self._get_annulus(point, s, r))
 
             annuli.append(point_annuli)
         return annuli
 
-    def get_annuli2(self, neighborhood_size, proportion, n_steps):
+    def get_annuli2(self, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps):
         distances, indices = self._get_distances_and_indices(neighborhood_size)
         neighborhoods_radius = [d[-1] for d in distances]
 
         annuli = list()
         for point, neighborhood_radius in zip(self.get_query_points(), neighborhoods_radius):
-            if n_steps == 1:
-                min_r = proportion * neighborhood_radius
-                annuli.append([self._get_annulus(point, neighborhood_radius, min_r)])
-            else:
-                min_neighborhood_radius = 0.75 * neighborhood_radius
+            min_neighborhood_radius = min_to_max_s_ratio * neighborhood_radius if n_steps > 1 else neighborhood_radius
 
-                point_annuli = list()
-                for max_r in np.linspace(start=min_neighborhood_radius, stop=neighborhood_radius, num=n_steps):
-                    min_r = proportion * max_r
-                    point_annuli.append(self._get_annulus(point, max_r, min_r))
+            point_annuli = list()
+            for s in np.linspace(start=min_neighborhood_radius, stop=neighborhood_radius, num=n_steps):
+                r = r_to_s_ratio * s
+                point_annuli.append(self._get_annulus(point, s, r))
 
                 annuli.append(point_annuli)
 

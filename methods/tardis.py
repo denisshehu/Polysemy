@@ -5,7 +5,7 @@ def execute(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename
     output_path = _execute(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename_prefix,
                            keep_terminal_open)
     update_point_cloud(point_cloud, output_path)
-    save_point_cloud(point_cloud, filename_prefix)
+    # save_point_cloud(point_cloud, filename_prefix)
     # visualize
 
 

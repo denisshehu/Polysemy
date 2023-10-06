@@ -120,6 +120,10 @@ class Query:
         unique_values, counts = np.unique(list(initial_classifications.values()), return_counts=True)
         index_most_common_value = np.argmax(counts)
         self._classification = unique_values[index_most_common_value]
+        print(unique_values, counts)
+        print(index_most_common_value)
+        print(self._classification)
+        print
 
     def process_euclidicity_estimates(self, euclidicity_estimates):
         self._euclidicity_estimates = euclidicity_estimates

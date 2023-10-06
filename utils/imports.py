@@ -15,3 +15,5 @@ import matplotlib.pyplot as plt
 import ripser
 from skdim.id import DANCo
 import joblib
+import time
+from gudhi.wasserstein.wasserstein import wasserstein_distance

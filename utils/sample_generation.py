@@ -1,5 +1,3 @@
-import numpy as np
-
 from utils.imports import *
 
 
@@ -32,6 +30,8 @@ def sample_from_ball(n, intrinsic_dimension, r, seed=None, spatial_dimension=Non
 
 
 def sample_from_singularity(n, intrinsic_dimension, r, angle_in_degrees, seed=None, spatial_dimension=None):
+    np.random.seed(seed)
+
     axis = np.zeros(shape=intrinsic_dimension)
     axis[-1] = 1
 
@@ -39,7 +39,9 @@ def sample_from_singularity(n, intrinsic_dimension, r, angle_in_degrees, seed=No
     threshold = math.cos(math.radians(angle_in_degrees))
 
     while points.shape[0] < n:
-        points_ = sample_from_ball(n, intrinsic_dimension, r, seed)
+        seed_ = np.random.randint(np.iinfo(np.int32).max)
+        points_ = sample_from_ball(n, intrinsic_dimension, r, seed_)
+
         for point in points_:
             cosine_similarity = np.dot(point, axis) / np.linalg.norm(point)
             if abs(cosine_similarity) >= threshold:
@@ -51,10 +53,14 @@ def sample_from_singularity(n, intrinsic_dimension, r, angle_in_degrees, seed=No
 
 
 def sample_from_annulus(n, intrinsic_dimension, max_r, min_r, seed=None, spatial_dimension=None):
+    np.random.seed(seed)
+
     points = np.empty(shape=(0, intrinsic_dimension))
 
     while points.shape[0] < n:
-        points_ = sample_from_ball(n, intrinsic_dimension, max_r, seed)
+        seed_ = np.random.randint(np.iinfo(np.int32).max)
+        points_ = sample_from_ball(n, intrinsic_dimension, max_r, seed_)
+
         for point in points_:
             norm = np.linalg.norm(point)
             if norm >= min_r:
@@ -66,14 +72,14 @@ def sample_from_annulus(n, intrinsic_dimension, max_r, min_r, seed=None, spatial
 
 
 def sample_from_intersecting_spheres(n1, intrinsic_dimension1, r1, n2, intrinsic_dimension2, r2, spatial_dimension,
-                                     seed1=None, seed2=None):
+                                     proportion=1, seed1=None, seed2=None):
     sphere1 = sample_from_sphere(n1, intrinsic_dimension1, r1, seed1, spatial_dimension)
     sphere2 = sample_from_sphere(n2, intrinsic_dimension2, r2, seed2, spatial_dimension)
 
     for point in sphere1:
-        point[0] -= r1
+        point[0] -= proportion * r1
     for point in sphere2:
-        point[0] += r2
+        point[0] += proportion * r2
 
     points = np.row_stack((sphere1, sphere2))
     return points
