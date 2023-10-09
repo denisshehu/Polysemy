@@ -17,3 +17,4 @@ from skdim.id import DANCo
 import joblib
 import time
 from gudhi.wasserstein.wasserstein import wasserstein_distance
+from gudhi.bottleneck import bottleneck_distance
