@@ -8,7 +8,7 @@ def detect(point_cloud, neighborhood_size, proportion, n_steps, filename_prefix=
 
 
 def detect_in_parallel(point_cloud, neighborhood_size, proportion, n_steps):
-    annuli = point_cloud.get_annuli2(neighborhood_size, proportion, n_steps)
+    annuli = point_cloud.get_annuli2(neighborhood_size, 0.75, proportion, n_steps)
 
     results = list()
     for query, query_annuli in zip(point_cloud.queries, annuli):

@@ -1,4 +1,4 @@
-from utils.utils_t import *
+from utils.main import *
 
 
 class Word:

@@ -1,6 +1,15 @@
 from utils.imports import *
 
 
+def add_extra_dimensions(points, spatial_dimension):
+    if spatial_dimension is not None:
+        n, intrinsic_dimension = points.shape
+        extra_dimensions = np.zeros(shape=(n, (spatial_dimension - intrinsic_dimension)))
+        points = np.hstack((points, extra_dimensions))
+
+    return points
+
+
 def translate(points, vector):
     return points - vector
 

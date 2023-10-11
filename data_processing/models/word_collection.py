@@ -61,7 +61,7 @@ class WordCollection:
             self._extract_subtree(child)
 
     def _extract_embeddings(self):
-        embeddings = load_bin(self._embeddings_path)
+        embeddings = load_embeddings(self._embeddings_path)
 
         for key in self._words.keys():
             try:

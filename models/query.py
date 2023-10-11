@@ -3,11 +3,11 @@ from utils.main import *
 
 class Query:
 
-    def __init__(self, identifier, point, word=None):
+    def __init__(self, identifier, point, word=None, word_type=None):
         self._identifier = identifier
         self._point = point
 
-        self._initial_intrinsic_dimension_estimates = dict()
+        self._initial_intrinsic_dimension_estimates = None
         self._filtered_intrinsic_dimension_estimates = None
         self._intrinsic_dimension = None
 
@@ -20,7 +20,8 @@ class Query:
         self._topological_polysemy = None
 
         self._word = word
-        self._n_senses = len(wn.synsets(word)) if word is not None else None
+        self._word_type = word_type
+        # self._n_senses = len(wn.synsets(word)) if word is not None else None
 
     @property
     def identifier(self):
@@ -30,13 +31,13 @@ class Query:
     def point(self):
         return self._point
 
-    # @property
-    # def initial_intrinsic_dimension_estimates(self):
-    #     return self._initial_intrinsic_dimension_estimates
+    @property
+    def initial_intrinsic_dimension_estimates(self):
+        return self._initial_intrinsic_dimension_estimates
 
-    # @property
-    # def filtered_intrinsic_dimension_estimates(self):
-    #     return self._filtered_intrinsic_dimension_estimates
+    @property
+    def filtered_intrinsic_dimension_estimates(self):
+        return self._filtered_intrinsic_dimension_estimates
 
     @property
     def intrinsic_dimension(self):
@@ -86,14 +87,15 @@ class Query:
     def word(self):
         return self._word
 
-    @property
-    def n_senses(self):
-        return self._n_senses
+    # @property
+    # def n_senses(self):
+    #     return self._n_senses
 
-    def add_intrinsic_dimension_estimate(self, key, estimate):
-        self._initial_intrinsic_dimension_estimates[key] = estimate
+    # def add_intrinsic_dimension_estimate(self, key, estimate):
+    #     self._initial_intrinsic_dimension_estimates[key] = estimate
 
-    def process_intrinsic_dimension_estimates(self):
+    def process_intrinsic_dimension_estimates(self, initial_intrinsic_dimension_estimates):
+        self._initial_intrinsic_dimension_estimates = initial_intrinsic_dimension_estimates
         self._filter_intrinsic_dimension_estimates()
         self._calculate_intrinsic_dimension()
 
@@ -106,6 +108,7 @@ class Query:
             self._filtered_intrinsic_dimension_estimates = self._initial_intrinsic_dimension_estimates
         else:
             filtered_estimates = dict(sorted_estimates[quartile_index:(-quartile_index)])
+            filtered_estimates = dict(sorted(filtered_estimates.items(), key=lambda item: item[0]))
             self._filtered_intrinsic_dimension_estimates = filtered_estimates
 
     def _calculate_intrinsic_dimension(self):

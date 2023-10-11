@@ -6,13 +6,21 @@ def load_xml(file_path):
     return element_tree
 
 
-def save_bin(data, file_path):
-    data.save_word2vec_format(file_path, binary=True)
+# def save_bin(data, file_path):
+#     data.save_word2vec_format(file_path, binary=True)
 
 
-def load_bin(file_path):
-    keyed_vectors = KeyedVectors.load_word2vec_format(file_path, binary=True)
-    return keyed_vectors
+def load_embeddings(file_path):
+    if file_path == fasttext_embeddings_path:
+        embeddings = FastText.load_fasttext_format(file_path).wv
+    elif file_path == glove_embeddings_path:
+        embeddings = KeyedVectors.load_word2vec_format(file_path, no_header=True)
+    elif file_path == word2vec_embeddings_path:
+        embeddings = KeyedVectors.load_word2vec_format(file_path, binary=True)
+    else:
+        embeddings = None
+
+    return embeddings
 
 
 def save_txt(data, file_path):
@@ -60,6 +68,5 @@ def save_point_cloud(point_cloud, filename_prefix):
     point_cloud_path = os.path.join(results_directory, f'{filename_prefix}point_cloud.yaml')
     save_yaml(point_cloud, point_cloud_path)
 
-
-def load_words():
-    return np.loadtxt(os.path.join(project_directory, 'words.txt'), dtype=str).tolist()
+# def load_words():
+#     return np.loadtxt(os.path.join(project_directory, 'words.txt'), dtype=str).tolist()

@@ -1,6 +1,6 @@
 import winsound
 
-from OLD.tardis.main_t import *
+from to_be_deleted.OLD.tardis.main_t import *
 
 word_collection = load_yaml(normalized_sc_word_collection_path)
 query = word_collection.get_monosemes_and_polysemes(n=100, use_n_total_senses=True)

@@ -3,7 +3,6 @@ from utils.main import *
 
 def estimate(point_cloud, min_neighborhood_size, max_neighborhood_size, filename_prefix=None):
     estimate_in_parallel(point_cloud, min_neighborhood_size, max_neighborhood_size)
-    # point_cloud.process_intrinsic_dimension_estimates()
     # save_point_cloud(point_cloud, filename_prefix)
     # visualize
 
@@ -18,15 +17,14 @@ def estimate_in_parallel(point_cloud, min_neighborhood_size, max_neighborhood_si
     results = {key: value for key, value in results}
 
     for query in point_cloud.queries:
-        query._initial_intrinsic_dimension_estimates = results[query.identifier]
-    point_cloud.process_intrinsic_dimension_estimates()
+        query.process_intrinsic_dimension_estimates(results[query.identifier])
 
 
 def _estimate(query, min_neighborhood_size, max_neighborhood_size, neighborhood):
-    initial_estimates = dict()
+    estimates = dict()
     for neighborhood_size in range(min_neighborhood_size, max_neighborhood_size + 1):
         estimator = DANCo(k=neighborhood_size)
         estimate_ = np.nan_to_num(estimator.fit_transform(neighborhood[:(neighborhood_size + 2)]))
-        initial_estimates[neighborhood_size] = estimate_
+        estimates[neighborhood_size] = estimate_
 
-    return query.identifier, initial_estimates
+    return query.identifier, estimates

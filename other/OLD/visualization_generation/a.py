@@ -1,4 +1,4 @@
-from OLD.visualization_generation.visualization_generation import *
+from to_be_deleted.OLD.visualization_generation.visualization_generation import *
 
 
 def extra_plots(dataframe_name, word_collection):

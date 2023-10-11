@@ -1,7 +1,7 @@
 from data_processing.models.word_collection import *
-from OLD.tardis.output_generation_t import *
-from OLD.tardis.output_processing_t import *
-from OLD.visualization_generation.results_visualization_t import *
+from to_be_deleted.OLD.tardis.output_generation_t import *
+from to_be_deleted.OLD.tardis.output_processing_t import *
+from to_be_deleted.OLD.visualization_generation.results_visualization_t import *
 
 
 def get_results(query, input=None, n_neighbors=50, max_dimension=2, n_steps=10, batch_size=None, seed=None,

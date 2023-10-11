@@ -9,7 +9,9 @@ class PointCloud:
         self._tree = None
         self._queries = None
 
-    def random_constructor(self, points, n_queries):
+    def random_constructor(self, points, n_queries, seed=None):
+        np.random.seed(seed)
+
         self._points = points
         self._tree = KDTree(points)
 
@@ -34,14 +36,18 @@ class PointCloud:
 
         self._queries = queries
 
-    def embeddings_constructor(self, model_name, query_keys, neighborhood_size):
-        embeddings = gensim.downloader.load(model_name)
+    def embeddings_constructor(self, embeddings_path, neighborhood_size, query_words_path=words_path):
+        embeddings = load_embeddings(embeddings_path)
         embeddings.unit_normalize_all()
 
-        identifiers = range(len(query_keys))
-        query_points = [embeddings[key] for key in query_keys]
-        queries = [Query(identifier, point, key) for identifier, point, key in
-                   zip(identifiers, query_points, query_keys)]
+        query_words = load_csv(query_words_path)
+        keys = list(query_words['Word'])
+        types = list(query_words['Type'])
+
+        identifiers = range(len(keys))
+        query_points = [embeddings[key] for key in keys]
+        queries = [Query(identifier, point, word, word_type) for identifier, point, word, word_type in
+                   zip(identifiers, query_points, keys, types)]
 
         point_keys = set()
         for point in query_points:
@@ -93,16 +99,11 @@ class PointCloud:
         annulus_indices = np.setdiff1d(ar1=large_ball_indices, ar2=small_ball_indices)
 
         annulus = (self._points[annulus_indices], s, r)
-        with open('C:\\Users\\its_d\\Desktop\\polysemy.txt', 'a') as file:
-            file.write(np.array2string(annulus[0]))
-            file.write('\n\n')
         return annulus
 
     def get_annuli(self, neighborhood_size, n_steps):
         distances, indices = self._get_distances_and_indices(neighborhood_size)
         radii = [[d[0], d[neighborhood_size // 3 - 1], d[-1]] for d in distances]
-        with open('C:\\Users\\its_d\\Desktop\\polysemy.txt', 'w') as file:
-            file.write(f'{str(radii)}\n')
 
         annuli = list()
         for point, point_radii in zip(self.get_query_points(), radii):
@@ -133,6 +134,6 @@ class PointCloud:
 
         return annuli
 
-    def process_intrinsic_dimension_estimates(self):
-        for query in self._queries:
-            query.process_intrinsic_dimension_estimates()
+    # def process_intrinsic_dimension_estimates(self):
+    #     for query in self._queries:
+    #         query.process_intrinsic_dimension_estimates()

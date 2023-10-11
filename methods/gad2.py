@@ -4,7 +4,6 @@ from utils.main import *
 def detect(point_cloud, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps, filename_prefix=None):
     detect_in_parallel(point_cloud, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps)
     # save_point_cloud(point_cloud, filename_prefix)
-    # print('Classified.')
 
 
 def detect_in_parallel(point_cloud, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps):
