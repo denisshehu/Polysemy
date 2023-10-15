@@ -4,7 +4,7 @@ from utils.functions import *
 def sample_from_sphere(n, intrinsic_dimension, r, seed=None, spatial_dimension=None):
     np.random.seed(seed)
 
-    points = np.random.normal(size=(n, intrinsic_dimension))
+    points = np.random.normal(size=(n, (intrinsic_dimension + 1)))
     for point in points:
         norm = np.linalg.norm(point)
         point *= r / norm
@@ -14,7 +14,7 @@ def sample_from_sphere(n, intrinsic_dimension, r, seed=None, spatial_dimension=N
 
 
 def sample_from_ball(n, intrinsic_dimension, r, seed=None, spatial_dimension=None):
-    points = sample_from_sphere(n, (intrinsic_dimension + 2), r, seed)
+    points = sample_from_sphere(n, ((intrinsic_dimension - 1) + 2), r, seed)
     points = points[:, :-2]
     points = add_extra_dimensions(points, spatial_dimension)
     return points

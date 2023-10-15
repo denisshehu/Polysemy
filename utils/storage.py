@@ -63,10 +63,10 @@ def load_csv(file_path):
     return data
 
 
-def save_point_cloud(point_cloud, filename_prefix):
-    filename_prefix = f'{filename_prefix}_' if filename_prefix is not None else ''
-    point_cloud_path = os.path.join(results_directory, f'{filename_prefix}point_cloud.yaml')
-    save_yaml(point_cloud, point_cloud_path)
+# def save_point_cloud(point_cloud, filename_prefix):
+#     filename_prefix = f'{filename_prefix}_' if filename_prefix is not None else ''
+#     point_cloud_path = os.path.join(results_directory, f'{filename_prefix}point_cloud.yaml')
+#     save_yaml(point_cloud, point_cloud_path)
 
 # def load_words():
 #     return np.loadtxt(os.path.join(project_directory, 'words.txt'), dtype=str).tolist()

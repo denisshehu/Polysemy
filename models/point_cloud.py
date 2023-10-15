@@ -94,6 +94,7 @@ class PointCloud:
         return neighborhoods
 
     def _get_annulus(self, point, s, r):
+        # large_ball_indices = self._tree.query_radius(X=point.reshape(1, -1), r=(1.000000000000001 * s))[0]
         large_ball_indices = self._tree.query_radius(X=point.reshape(1, -1), r=s)[0]
         small_ball_indices = self._tree.query_radius(X=point.reshape(1, -1), r=r)[0]
         annulus_indices = np.setdiff1d(ar1=large_ball_indices, ar2=small_ball_indices)
@@ -130,10 +131,6 @@ class PointCloud:
                 r = r_to_s_ratio * s
                 point_annuli.append(self._get_annulus(point, s, r))
 
-                annuli.append(point_annuli)
+            annuli.append(point_annuli)
 
         return annuli
-
-    # def process_intrinsic_dimension_estimates(self):
-    #     for query in self._queries:
-    #         query.process_intrinsic_dimension_estimates()

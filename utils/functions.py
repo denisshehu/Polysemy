@@ -1,10 +1,10 @@
-from utils.imports import *
+from utils.storage import *
 
 
-def add_extra_dimensions(points, spatial_dimension):
-    if spatial_dimension is not None:
-        n, intrinsic_dimension = points.shape
-        extra_dimensions = np.zeros(shape=(n, (spatial_dimension - intrinsic_dimension)))
+def add_extra_dimensions(points, desired_dimension):
+    if desired_dimension is not None:
+        n, actual_dimension = points.shape
+        extra_dimensions = np.zeros(shape=(n, (desired_dimension - actual_dimension)))
         points = np.hstack((points, extra_dimensions))
 
     return points
@@ -29,11 +29,11 @@ def scale(points, origin, scaler):
 
 
 def filter_persistence_diagrams(persistence_diagrams):
-    filtered_persistence_diagrams = []
+    filtered_persistence_diagrams = list()
 
     threshold = 0.0
     for persistence_diagram in persistence_diagrams:
-        filtered_persistence_diagram = []
+        filtered_persistence_diagram = list()
 
         diagram_highest_persistence = 0.0
         for feature in persistence_diagram:
@@ -52,3 +52,9 @@ def filter_persistence_diagrams(persistence_diagrams):
 
     filtered_persistence_diagrams = [diagram for diagram in filtered_persistence_diagrams if len(diagram) > 0]
     return filtered_persistence_diagrams
+
+
+def save_point_cloud(point_cloud, filename_prefix):
+    if filename_prefix is not None:
+        file_path = os.path.join(results_directory, f'{filename_prefix}_point_cloud.yaml')
+        save_yaml(point_cloud, file_path)

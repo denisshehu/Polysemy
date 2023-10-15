@@ -3,8 +3,7 @@ from utils.main import *
 
 def estimate(point_cloud, min_neighborhood_size, max_neighborhood_size, filename_prefix=None):
     estimate_in_parallel(point_cloud, min_neighborhood_size, max_neighborhood_size)
-    # save_point_cloud(point_cloud, filename_prefix)
-    # visualize
+    save_point_cloud(point_cloud, filename_prefix)
 
 
 def estimate_in_parallel(point_cloud, min_neighborhood_size, max_neighborhood_size):

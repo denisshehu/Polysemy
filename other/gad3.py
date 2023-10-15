@@ -29,7 +29,7 @@ def detect_in_parallel(point_cloud, neighborhood_size, proportion, n_steps):
             dictionary[identifier] = {(max_r, min_r): classification}
 
     for query in point_cloud.queries:
-        query.process_initial_classifications(dictionary[query.identifier])
+        query.process_classification_estimates(dictionary[query.identifier])
 
 
 def _detect(query, annulus, max_r, min_r):

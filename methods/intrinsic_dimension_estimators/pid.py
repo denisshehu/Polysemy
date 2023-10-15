@@ -1,12 +1,17 @@
 from utils.main import *
 
 
-def estimate(point_cloud, neighborhood_size, maximum_dimension, n_steps, filename_prefix=None):
-    estimate_in_parallel(point_cloud, neighborhood_size, maximum_dimension, n_steps)
+def estimate(point_cloud, neighborhood_size, maximum_dimension, min_to_max_s_ratio=None, r_to_s_ratio=None, n_steps=10,
+             filename_prefix=None):
+    estimate_in_parallel(point_cloud, neighborhood_size, maximum_dimension, min_to_max_s_ratio, r_to_s_ratio, n_steps)
+    save_point_cloud(point_cloud, filename_prefix)
 
 
-def estimate_in_parallel(point_cloud, neighborhood_size, maximum_dimension, n_steps):
-    annuli = point_cloud.get_annuli(neighborhood_size, n_steps)
+def estimate_in_parallel(point_cloud, neighborhood_size, maximum_dimension, min_to_max_s_ratio, r_to_s_ratio, n_steps):
+    if None in [min_to_max_s_ratio, r_to_s_ratio]:
+        annuli = point_cloud.get_annuli(neighborhood_size, n_steps)
+    else:
+        annuli = point_cloud.get_annuli2(neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps)
 
     results = joblib.Parallel(n_jobs=-1)(
         joblib.delayed(_estimate)(query, query_annuli, maximum_dimension)
@@ -20,10 +25,11 @@ def estimate_in_parallel(point_cloud, neighborhood_size, maximum_dimension, n_st
 
 
 def _estimate(query, query_annuli, maximum_dimension):
-    estimates = []
+    estimates = list()
     for annulus, _, _ in query_annuli:
         if len(annulus) != 0:
             persistence_diagrams = ripser.ripser(X=annulus, maxdim=(maximum_dimension - 1))['dgms']
             persistence_diagrams = filter_persistence_diagrams(persistence_diagrams)
             estimates.append(len(persistence_diagrams))
+
     return query.identifier, estimates

@@ -1,7 +1,7 @@
 import winsound
 
 from models.point_cloud import *
-from methods.dot_product import *
+from methods.neighborhood_thickness import *
 
 k = 200
 embeddings_paths = [word2vec_embeddings_path, fasttext_embeddings_path, glove_embeddings_path]

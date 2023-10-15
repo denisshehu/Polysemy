@@ -11,13 +11,17 @@ class Query:
         self._filtered_intrinsic_dimension_estimates = None
         self._intrinsic_dimension = None
 
-        self._initial_classifications = None
+        self._classification_estimates = None
         self._classification = None
 
         self._euclidicity_estimates = None
         self._euclidicity = None
 
+        self._topological_polysemy_estimates = None
         self._topological_polysemy = None
+
+        self._original_neighborhood_thickness = None
+        self._translated_neighborhood_thickness = None
 
         self._word = word
         self._word_type = word_type
@@ -48,8 +52,8 @@ class Query:
         self._intrinsic_dimension = intrinsic_dimension
 
     # @property
-    # def initial_classifications(self):
-    #     return self._initial_classifications
+    # def classification_estimates(self):
+    #     return self._classification_estimates
 
     @property
     def classification(self):
@@ -84,15 +88,28 @@ class Query:
         self._topological_polysemy = topological_polysemy
 
     @property
+    def original_neighborhood_thickness(self):
+        return self._original_neighborhood_thickness
+
+    @original_neighborhood_thickness.setter
+    def original_neighborhood_thickness(self, original_neighborhood_thickness):
+        self._original_neighborhood_thickness = original_neighborhood_thickness
+
+    @property
+    def translated_neighborhood_thickness(self):
+        return self._translated_neighborhood_thickness
+
+    @translated_neighborhood_thickness.setter
+    def translated_neighborhood_thickness(self, translated_neighborhood_thickness):
+        self._translated_neighborhood_thickness = translated_neighborhood_thickness
+
+    @property
     def word(self):
         return self._word
 
     # @property
     # def n_senses(self):
     #     return self._n_senses
-
-    # def add_intrinsic_dimension_estimate(self, key, estimate):
-    #     self._initial_intrinsic_dimension_estimates[key] = estimate
 
     def process_intrinsic_dimension_estimates(self, initial_intrinsic_dimension_estimates):
         self._initial_intrinsic_dimension_estimates = initial_intrinsic_dimension_estimates
@@ -117,13 +134,17 @@ class Query:
 
         self._intrinsic_dimension = intrinsic_dimension
 
-    def process_initial_classifications(self, initial_classifications):
-        self._initial_classifications = initial_classifications
+    def process_classification_estimates(self, classification_estimates):
+        self._classification_estimates = classification_estimates
 
-        unique_values, counts = np.unique(list(initial_classifications.values()), return_counts=True)
+        unique_values, counts = np.unique(list(classification_estimates.values()), return_counts=True)
         index_most_common_value = np.argmax(counts)
         self._classification = unique_values[index_most_common_value]
 
     def process_euclidicity_estimates(self, euclidicity_estimates):
         self._euclidicity_estimates = euclidicity_estimates
         self._euclidicity = sum(euclidicity_estimates.values()) / len(euclidicity_estimates)
+
+    def process_topological_polysemy_estimates(self, topological_polysemy_estimates):
+        self._topological_polysemy_estimates = topological_polysemy_estimates
+        self._topological_polysemy = sum(topological_polysemy_estimates.values()) / len(topological_polysemy_estimates)
