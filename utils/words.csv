@@ -39,6 +39,7 @@ list,Inter-class polyseme
 result,Inter-class polyseme
 range,Inter-class polyseme
 cost,Inter-class polyseme
+church,Intra-class polyseme
 life,Intra-class polyseme
 section,Intra-class polyseme
 thing,Intra-class polyseme
@@ -46,7 +47,6 @@ cell,Intra-class polyseme
 feeling,Intra-class polyseme
 moment,Intra-class polyseme
 job,Intra-class polyseme
-child,Intra-class polyseme
 purpose,Intra-class polyseme
 problem,Intra-class polyseme
 accept,Intra-class polyseme

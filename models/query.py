@@ -107,6 +107,10 @@ class Query:
     def word(self):
         return self._word
 
+    @property
+    def word_type(self):
+        return self._word_type
+
     # @property
     # def n_senses(self):
     #     return self._n_senses
