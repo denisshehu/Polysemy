@@ -39,6 +39,7 @@ class PointCloud:
     def embeddings_constructor(self, embeddings_path, neighborhood_size, query_words_path=words_path):
         embeddings = load_embeddings(embeddings_path)
         embeddings.unit_normalize_all()
+        embeddings = filter_embeddings(embeddings)
 
         query_words = load_csv(query_words_path)
         keys = list(query_words['Word'])

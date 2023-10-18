@@ -1,6 +1,6 @@
 import os
 import nltk
-from nltk.corpus import wordnet as wn
+from nltk.corpus import wordnet, words
 import numpy as np
 from sklearn.neighbors import KDTree
 import math
@@ -19,3 +19,4 @@ import time
 from gudhi.wasserstein.wasserstein import wasserstein_distance
 from gudhi.bottleneck import bottleneck_distance
 import scienceplots
+from sklearn.decomposition import PCA

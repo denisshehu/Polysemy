@@ -1,35 +1,35 @@
 from utils.main import *
 
 
-def detect(point_cloud, neighborhood_size, proportion, n_steps, filename_prefix=None):
-    detect_in_parallel(point_cloud, neighborhood_size, proportion, n_steps)
-    # save_point_cloud(point_cloud, filename_prefix)
-    # print('Classified.')
+def detect(point_cloud, neighborhood_size, min_to_max_s_ratio=1, r_to_s_ratio=0.7, n_steps=1, filename_prefix=None):
+    detect_in_parallel(point_cloud, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps)
+    save_point_cloud(point_cloud, filename_prefix)
 
 
-def detect_in_parallel(point_cloud, neighborhood_size, proportion, n_steps):
-    annuli = point_cloud.get_annuli2(neighborhood_size, 0.75, proportion, n_steps)
+def detect_in_parallel(point_cloud, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps):
+    if None in [min_to_max_s_ratio, r_to_s_ratio]:
+        annuli = point_cloud.get_annuli(neighborhood_size, n_steps)
+    else:
+        annuli = point_cloud.get_annuli2(neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps)
 
-    results = list()
+    results = dict()
     for query, query_annuli in zip(point_cloud.queries, annuli):
 
-        results_ = joblib.Parallel(n_jobs=-1)(
+        result = joblib.Parallel(n_jobs=-1)(
             joblib.delayed(_detect)(query, annulus, max_r, min_r)
             for annulus, max_r, min_r in query_annuli
         )
-        results += results_
+        identifier = result[0][0]
+        max_r, min_r, classification = result[0][1]
 
-    dictionary = dict()
-    for result in results:
-        identifier = result[0]
-        max_r, min_r, classification = result[1]
-        if identifier in dictionary.keys():
-            dictionary[identifier][(max_r, min_r)] = classification
+        if identifier in results.keys():
+            a = results[identifier]
+            a[(max_r, min_r)] = classification
         else:
-            dictionary[identifier] = {(max_r, min_r): classification}
+            results[identifier] = {(max_r, min_r): classification}
 
     for query in point_cloud.queries:
-        query.process_classification_estimates(dictionary[query.identifier])
+        query.process_classification_estimates(results[query.identifier])
 
 
 def _detect(query, annulus, max_r, min_r):
@@ -40,10 +40,10 @@ def _detect(query, annulus, max_r, min_r):
         return query.identifier, (max_r, min_r, classification)
 
 
-def geometric_anomaly_detection(persistence_diagram, max_r, min_r):
+def geometric_anomaly_detection(persistence_diagram, s, r):
     n_bars = 0
 
-    threshold = max_r - min_r
+    threshold = s - r
     for feature in persistence_diagram:
         persistence = feature[1] - feature[0]
         if persistence > threshold:

@@ -58,3 +58,11 @@ def save_point_cloud(point_cloud, filename_prefix):
     if filename_prefix is not None:
         file_path = os.path.join(results_directory, f'{filename_prefix}_point_cloud.yaml')
         save_yaml(point_cloud, file_path)
+
+
+def filter_embeddings(embeddings):
+    filtered_keys = [key for key in embeddings.index_to_key if len(wordnet.synsets(key)) > 0 and not key.isdigit()]
+    filtered_vectors = [embeddings[key] for key in filtered_keys]
+    filtered_embeddings = KeyedVectors(vector_size=embeddings.vector_size)
+    filtered_embeddings.add_vectors(filtered_keys, filtered_vectors)
+    return filtered_embeddings

@@ -23,6 +23,8 @@ class Query:
         self._original_neighborhood_thickness = None
         self._translated_neighborhood_thickness = None
 
+        self._neighborhood_pca = None
+
         self._word = word
         self._word_type = word_type
         # self._n_senses = len(wn.synsets(word)) if word is not None else None
@@ -102,6 +104,14 @@ class Query:
     @translated_neighborhood_thickness.setter
     def translated_neighborhood_thickness(self, translated_neighborhood_thickness):
         self._translated_neighborhood_thickness = translated_neighborhood_thickness
+
+    @property
+    def neighborhood_pca(self):
+        return self._neighborhood_pca
+
+    @neighborhood_pca.setter
+    def neighborhood_pca(self, neighborhood_pca):
+        self._neighborhood_pca = neighborhood_pca
 
     @property
     def word(self):
