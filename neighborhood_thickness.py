@@ -6,7 +6,7 @@ from methods.neighborhood_thickness import *
 k = 200
 embeddings_paths = [word2vec_embeddings_path, fasttext_embeddings_path, glove_embeddings_path]
 filename_prefixes = ['word2vec', 'fasttext', 'glove']
-neighborhood_sizes = range(10, 110, 10)
+neighborhood_sizes = [100]#range(10, 110, 10)
 
 for embeddings_path, filename_prefix in zip(embeddings_paths, filename_prefixes):
 
@@ -16,6 +16,6 @@ for embeddings_path, filename_prefix in zip(embeddings_paths, filename_prefixes)
     for neighborhood_size in neighborhood_sizes:
         filename = f'{filename_prefix}_{neighborhood_size}'
         calculate(point_cloud, neighborhood_size, filename)
-        neighborhood_thickness_table(point_cloud, filename)
+        tabulate_neighborhood_thickness(point_cloud, filename)
 
 winsound.Beep(500, 3000)

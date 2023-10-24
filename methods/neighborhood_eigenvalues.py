@@ -16,11 +16,11 @@ def calculate_in_parallel(point_cloud, neighborhood_size):
     results = {key: value for key, value in results}
 
     for query in point_cloud.queries:
-        query.neighborhood_pca = results[query.identifier]
+        query.neighborhood_eigenvalues = results[query.identifier]
 
 
 def _calculate(query, neighborhood):
-    pca = PCA()
-    pca.fit(neighborhood)
-    eigenvalues = pca.explained_variance_
+    model = PCA()
+    model.fit(neighborhood)
+    eigenvalues = model.explained_variance_
     return query.identifier, eigenvalues

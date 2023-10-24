@@ -1,7 +1,7 @@
 from utils.storage import *
 
 
-def neighborhood_thickness_table(point_cloud, table_name_prefix):
+def tabulate_neighborhood_thickness(point_cloud, table_name_prefix):
     queries = point_cloud.queries
     identifiers = [query.identifier for query in queries]
     words = [query.word for query in queries]

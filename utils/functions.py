@@ -28,7 +28,7 @@ def scale(points, origin, scaler):
     return points
 
 
-def filter_persistence_diagrams(persistence_diagrams):
+def filter_persistence_diagrams(persistence_diagrams, word=None):
     filtered_persistence_diagrams = list()
 
     threshold = 0.0
@@ -49,6 +49,15 @@ def filter_persistence_diagrams(persistence_diagrams):
 
         filtered_persistence_diagrams.append(np.array(filtered_persistence_diagram))
         threshold = max(threshold, diagram_highest_persistence)
+
+    if word is not None:
+        max_i = -1
+        for i in range(len(filtered_persistence_diagrams)):
+            if len(filtered_persistence_diagrams[i]) > 0:
+                max_i = max(max_i, i)
+
+        with open('C:\\Users\\its_d\\Desktop\\diagrams.txt', 'a') as file:
+            file.write(f'{word}: {max_i} (euclidicity)\n')
 
     filtered_persistence_diagrams = [diagram for diagram in filtered_persistence_diagrams if len(diagram) > 0]
     return filtered_persistence_diagrams

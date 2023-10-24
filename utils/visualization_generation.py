@@ -4,41 +4,111 @@ from utils.variables import *
 plt.style.use('science')
 
 
-def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plots=False, colormap=None,
-                        elev=None, azim=None, roll=None, hide_x_ticks=True, hide_y_ticks=True, hide_z_ticks=True):
-    points = point_cloud.get_query_points()
-    intrinsic_dimensions = np.array([query.intrinsic_dimension for query in point_cloud.queries])
+def visualize_topological_polysemy(point_cloud, figure_name_prefix, colormap=None, elev=None, azim=None, roll=None,
+                                   hide_x_tick_labels=True, hide_y_tick_labels=True, hide_z_tick_labels=True):
+    attribute = 'topological_polysemy'
+    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
+                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels)
 
-    plot_3d_scatterplot(points, intrinsic_dimensions, colormap, 'Intrinsic dimension', elev, azim, roll,
-                        hide_x_ticks, hide_y_ticks, hide_z_ticks, f'{figure_name_prefix}_3d', (3, 3))
 
-    words = [query.word for query in point_cloud.queries]
-    are_words_none = None in words
-    y = np.array(
-        [query.word_type.replace(' ', '\n') for query in point_cloud.queries]) if not are_words_none else np.ones(
-        intrinsic_dimensions.shape)
-    y_label = 'Word type' if not are_words_none else None
-    plot_scatterplot(intrinsic_dimensions, y, 'Intrinsic dimension', y_label, are_words_none,
-                     f'{figure_name_prefix}_intrinsic_dimension_summary', (9, 3))  # , (15, 5))
+def visualize_classification(point_cloud, figure_name_prefix, colormap=None, elev=None, azim=None, roll=None,
+                             hide_x_tick_labels=True, hide_y_tick_labels=True, hide_z_tick_labels=True):
+    attribute = 'classification'
+    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
+                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels)
 
+
+def visualize_euclidicity(point_cloud, figure_name_prefix, colormap=None, elev=None, azim=None, roll=None,
+                          hide_x_tick_labels=True, hide_y_tick_labels=True, hide_z_tick_labels=True):
+    attribute = 'euclidicity'
+    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
+                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels)
+
+
+def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plots=True, colormap=None,
+                        elev=None, azim=None, roll=None, hide_x_tick_labels=True, hide_y_tick_labels=True,
+                        hide_z_tick_labels=True):
+    attribute = 'intrinsic_dimension'
+    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
+                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels)
+
+    # Individual plots
     if include_individual_plots:
         for query in point_cloud.queries:
             min_x, max_x, min_y, max_y = None, None, None, None
-
             for estimates, estimates_type in [(query.initial_intrinsic_dimension_estimates, 'initial'),
                                               (query.filtered_intrinsic_dimension_estimates, 'filtered')]:
-                x, y = list(estimates.keys()), list(estimates.values())
 
+                x, y = list(estimates.keys()), list(estimates.values())
                 if estimates_type == 'initial':
                     min_x, max_x, min_y, max_y = min(x), max(x), min(y), max(y)
 
+                are_words_none = None in [query.word for query in point_cloud.queries]
                 q = query.word if not are_words_none else query.identifier
-                plot_line_plot(x, y, 'Neighborhood size', 'Intrinsic dimension', min_x, max_x,
-                               min_y, max_y, f'{figure_name_prefix}_{q}_{estimates_type}_estimates', (9, 3))  # , (15, 5))
+                x_label = 'Neighborhood size'
+                y_label = attribute.replace('_', ' ').capitalize()
+                figure_name = f'{figure_name_prefix}_{q}_{estimates_type}_{attribute}'
+                figure_size = (9, 3)
+
+                plot_line_plot(x, y, x_label, y_label, min_x, max_x, min_y, max_y, figure_name, figure_size)
 
 
-def plot_3d_scatterplot(points, values=None, colormap=None, colorbar_label=None, elev=None, azim=None, roll=None,
-                        hide_x_ticks=False, hide_y_ticks=False, hide_z_ticks=False, figure_name=None, figure_size=None):
+def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
+                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels):
+    points = point_cloud.get_query_points()
+    attribute_values = np.array([getattr(query, attribute) for query in point_cloud.queries])
+    label = attribute.replace('_', ' ').capitalize()
+
+    # 3D plot
+    color_bar_label = label
+    figure_name = f'{figure_name_prefix}_3d_plot_{attribute}'
+    figure_size = (3, 3)
+
+    plot_3d_scatterplot(points, attribute_values, colormap, color_bar_label, elev, azim, roll,
+                        hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, figure_name, figure_size)
+
+    # Summary plot
+    are_words_none = None in [query.word for query in point_cloud.queries]
+    y = np.array(
+        [query.word_type.replace(' ', '\n') for query in point_cloud.queries]) if not are_words_none else np.ones(
+        attribute_values.shape)
+    x_label = label
+    y_label = 'Word type' if not are_words_none else None
+    figure_name = f'{figure_name_prefix}_plot_summary_{attribute}'
+    figure_size = (9, 3)
+
+    plot_scatterplot(attribute_values, y, x_label, y_label, are_words_none, figure_name, figure_size)
+
+
+def visualize_neighborhood_eigenvalues(point_cloud, figure_name_prefix):
+    xs, ys, labels, colors = list(), list(), list(), list()
+
+    for query in point_cloud.queries:
+        y = query.neighborhood_eigenvalues
+        x = range(len(y))
+        label = query.word_type
+        if label == 'Monoseme':
+            color = 'red'
+        elif label == 'Inter-class polyseme':
+            color = 'green'
+        elif label == 'Intra-class polyseme':
+            color = 'blue'
+        else:
+            color = None
+
+        xs.append(x)
+        ys.append(y)
+        labels.append(label)
+        colors.append(color)
+
+    figure_name = f'{figure_name_prefix}_eigenvalues'
+    figure_size = (9, 3)
+    plot_multiple_scatterplots(xs, ys, labels, colors, figure_name=figure_name, figure_size=figure_size)
+
+
+def plot_3d_scatterplot(points, values=None, colormap=None, color_bar_label=None, elev=None, azim=None, roll=None,
+                        hide_x_tick_labels=False, hide_y_tick_labels=False, hide_z_tick_labels=False,
+                        figure_name=None, figure_size=None):
     dimension = points.shape[-1]
 
     if dimension < 4:
@@ -47,26 +117,26 @@ def plot_3d_scatterplot(points, values=None, colormap=None, colorbar_label=None,
         if dimension < 3:
             elev = -90 if elev is None else elev
             azim = 0 if azim is None else azim
-            hide_z_ticks = True
+            hide_z_tick_labels = True
 
-        _plot_3d_scatterplot(points, values, colormap, colorbar_label, elev, azim, roll,
-                             hide_x_ticks, hide_y_ticks, hide_z_ticks, figure_name, figure_size)
+        _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, roll,
+                             hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, figure_name, figure_size)
 
 
-def _plot_3d_scatterplot(points, values, colormap, colorbar_label, elev, azim, roll, hide_x_ticks, hide_y_ticks,
-                         hide_z_ticks, figure_name, figure_size):
+def _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, roll,
+                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, figure_name, figure_size):
     fig = plt.figure(figsize=figure_size)
     ax = fig.add_subplot(projection='3d')
     scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
-    fig.colorbar(scatter, label=colorbar_label)
+    fig.colorbar(scatter, label=color_bar_label)
     ax.set_aspect('equal')
     ax.view_init(elev=elev, azim=azim, roll=roll)
 
-    if hide_x_ticks:
+    if hide_x_tick_labels:
         ax.set_xticklabels([])
-    if hide_y_ticks:
+    if hide_y_tick_labels:
         ax.set_yticklabels([])
-    if hide_z_ticks:
+    if hide_z_tick_labels:
         ax.set_zticklabels([])
 
     if figure_name is not None:
@@ -77,14 +147,36 @@ def _plot_3d_scatterplot(points, values, colormap, colorbar_label, elev, azim, r
         plt.show()
 
 
-def plot_scatterplot(x, y, x_label=None, y_label=None, hide_y_ticks=False, figure_name=None, figure_size=None):
+def plot_scatterplot(x, y, x_label=None, y_label=None, hide_y_tick_labels=False, figure_name=None, figure_size=None):
     fig, ax = plt.subplots(figsize=figure_size)
-    ax.scatter(x, y, c='black')
+    ax.scatter(x, y, c='k')
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
 
-    if hide_y_ticks:
-        ax.set_yticks([])
+    if hide_y_tick_labels:
+        ax.set_yticklabels([])
+
+    if figure_name is not None:
+        figure_path = os.path.join(results_directory, f'{figure_name}.png')
+        plt.savefig(figure_path, dpi=300)
+        plt.close()
+    else:
+        plt.show()
+
+
+def plot_multiple_scatterplots(xs, ys, labels, colors, x_label=None, y_label=None, figure_name=None, figure_size=None):
+    fig, ax = plt.subplots(figsize=figure_size)
+
+    for x, y, label, color in zip(xs, ys, labels, colors):
+        ax.scatter(x, y, 10, label=label, color=color)
+
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+
+    ax.legend()
+    handles, labels = ax.get_legend_handles_labels()
+    unique = dict(zip(labels, handles))
+    ax.legend(unique.values(), unique.keys())
 
     if figure_name is not None:
         figure_path = os.path.join(results_directory, f'{figure_name}.png')
@@ -97,7 +189,7 @@ def plot_scatterplot(x, y, x_label=None, y_label=None, hide_y_ticks=False, figur
 def plot_line_plot(x, y, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None,
                    figure_name=None, figure_size=None):
     fig, ax = plt.subplots(figsize=figure_size)
-    ax.plot(x, y, 'k--o')
+    ax.plot(x, y, 'k:o', markersize=4)
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.set_xlim(min_x, max_x)

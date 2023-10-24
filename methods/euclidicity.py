@@ -29,7 +29,7 @@ def _calculate(query, query_annuli):
     estimates = dict()
     for annulus, s, r in query_annuli:
         if len(annulus) != 0:
-            diagram1 = compute_persistence_diagram(annulus, dimension, s, query.point)
+            diagram1 = compute_persistence_diagram(annulus, dimension, s, query.point, query.word)
 
             euclidean_annulus = sample_from_annulus(len(annulus), dimension, s, r, seed=1)
             diagram2 = compute_persistence_diagram(euclidean_annulus, dimension, s)
@@ -40,8 +40,8 @@ def _calculate(query, query_annuli):
     return query.identifier, estimates
 
 
-def compute_persistence_diagram(points, dimension, scaler, origin=None):
+def compute_persistence_diagram(points, dimension, scaler, origin=None, word=None):
     points = scale(points, origin, scaler)
     persistence_diagrams = ripser.ripser(X=points, maxdim=(dimension - 1))['dgms']
-    filtered_persistence_diagrams = filter_persistence_diagrams(persistence_diagrams)
+    filtered_persistence_diagrams = filter_persistence_diagrams(persistence_diagrams, word)
     return np.row_stack(filtered_persistence_diagrams)
