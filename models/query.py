@@ -53,9 +53,9 @@ class Query:
     def intrinsic_dimension(self, intrinsic_dimension):
         self._intrinsic_dimension = intrinsic_dimension
 
-    # @property
-    # def classification_estimates(self):
-    #     return self._classification_estimates
+    @property
+    def classification_estimates(self):
+        return self._classification_estimates
 
     @property
     def classification(self):

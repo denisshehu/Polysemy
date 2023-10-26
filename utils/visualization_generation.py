@@ -1,7 +1,7 @@
 from utils.functions import *
 from utils.variables import *
 
-plt.style.use('science')
+# plt.style.use('science')
 
 
 def visualize_topological_polysemy(point_cloud, figure_name_prefix, colormap=None, elev=None, azim=None, roll=None,
