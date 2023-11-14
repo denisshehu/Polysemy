@@ -1,5 +1,5 @@
-from other.data_processing.data_manipulation import *
-from other.data_processing.models.word_collection import *
+from data_processing.data_manipulation import *
+from data_processing.models.word_collection import *
 
 fix_sco_corpus()
 

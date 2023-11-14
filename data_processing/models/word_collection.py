@@ -1,4 +1,4 @@
-from other.data_processing.models.word import *
+from data_processing.models.word import *
 
 
 class WordCollection:

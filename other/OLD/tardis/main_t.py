@@ -1,4 +1,4 @@
-from other.data_processing.models.word_collection import *
+from data_processing.models.word_collection import *
 from to_be_deleted.OLD.tardis.output_generation_t import *
 from to_be_deleted.OLD.tardis.output_processing_t import *
 from to_be_deleted.OLD.visualization_generation.results_visualization_t import *
