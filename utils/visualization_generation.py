@@ -1,7 +1,8 @@
 from utils.functions import *
 from utils.variables import *
 
-# plt.style.use('science')
+
+# plt.style.use(['science', 'high-contrast'])
 
 
 def visualize_topological_polysemy(point_cloud, figure_name_prefix, colormap=None, elev=None, azim=None, roll=None,
@@ -108,7 +109,9 @@ def visualize_neighborhood_eigenvalues(point_cloud, figure_name_prefix):
 
 def plot_3d_scatterplot(points, values=None, colormap=None, color_bar_label=None, elev=None, azim=None, roll=None,
                         hide_x_tick_labels=False, hide_y_tick_labels=False, hide_z_tick_labels=False,
-                        figure_name=None, figure_size=None):
+                        hide_color_bar=False, figure_context=None, figure_name=None, figure_size=None):
+    if figure_context is None:
+        figure_context = list()
     dimension = points.shape[-1]
 
     if dimension < 4:
@@ -120,48 +123,65 @@ def plot_3d_scatterplot(points, values=None, colormap=None, color_bar_label=None
             hide_z_tick_labels = True
 
         _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, roll,
-                             hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, figure_name, figure_size)
+                             hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar,
+                             figure_context, figure_name, figure_size)
 
 
 def _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, roll,
-                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, figure_name, figure_size):
-    fig = plt.figure(figsize=figure_size)
-    ax = fig.add_subplot(projection='3d')
-    scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
-    fig.colorbar(scatter, label=color_bar_label)
-    ax.set_aspect('equal')
-    ax.view_init(elev=elev, azim=azim, roll=roll)
+                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar,
+                         figure_context, figure_name, figure_size):
+    with plt.style.context(figure_context):
+        fig = plt.figure(figsize=figure_size)
+        ax = fig.add_subplot(projection='3d')
+        scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
+        ax.set_aspect('equal')
+        ax.view_init(elev=elev, azim=azim, roll=roll)
 
-    if hide_x_tick_labels:
-        ax.set_xticklabels([])
-    if hide_y_tick_labels:
-        ax.set_yticklabels([])
-    if hide_z_tick_labels:
-        ax.set_zticklabels([])
+        if hide_x_tick_labels:
+            ax.set_xticklabels([])
+        if hide_y_tick_labels:
+            ax.set_yticklabels([])
+        if hide_z_tick_labels:
+            ax.set_zticklabels([])
+        if not hide_color_bar:
+            fig.colorbar(scatter, label=color_bar_label)
 
-    if figure_name is not None:
-        figure_path = os.path.join(results_directory, f'{figure_name}.png')
-        plt.savefig(figure_path, dpi=300)
-        plt.close()
-    else:
-        plt.show()
+        if figure_name is not None:
+            figure_path = os.path.join(results_directory, f'{figure_name}.png')
+            plt.savefig(figure_path, dpi=300)
+            print(plt.gcf().get_size_inches())
+            plt.close()
+        else:
+            plt.show()
 
 
-def plot_scatterplot(x, y, x_label=None, y_label=None, hide_y_tick_labels=False, figure_name=None, figure_size=None):
-    fig, ax = plt.subplots(figsize=figure_size)
-    ax.scatter(x, y, c='k')
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
+def plot_scatterplot(x, y, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None, point_sizes=None,
+                     hide_y_tick_labels=False, figure_context=None, figure_name=None, figure_size=None):
+    if figure_context is None:
+        figure_context = list()
 
-    if hide_y_tick_labels:
-        ax.set_yticklabels([])
+    with plt.style.context(figure_context):
+        fig, ax = plt.subplots(figsize=figure_size)
 
-    if figure_name is not None:
-        figure_path = os.path.join(results_directory, f'{figure_name}.png')
-        plt.savefig(figure_path, dpi=300)
-        plt.close()
-    else:
-        plt.show()
+        if point_sizes is None:
+            ax.scatter(x, y, c='k')
+        else:
+            ax.scatter(x, y, s=point_sizes, c='k')
+
+        ax.set_xlabel(x_label)
+        ax.set_ylabel(y_label)
+        ax.set_xlim(min_x, max_x)
+        ax.set_ylim(min_y, max_y)
+
+        if hide_y_tick_labels:
+            ax.set_yticklabels([])
+
+        if figure_name is not None:
+            figure_path = os.path.join(results_directory, f'{figure_name}.png')
+            plt.savefig(figure_path, dpi=300)
+            plt.close()
+        else:
+            plt.show()
 
 
 def plot_multiple_scatterplots(xs, ys, labels, colors, x_label=None, y_label=None, figure_name=None, figure_size=None):

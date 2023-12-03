@@ -14,7 +14,7 @@ def translate(points, vector):
     return points - vector
 
 
-def project_to_unit_circle(points, origin):
+def project_to_unit_sphere(points, origin):
     points = translate(points, origin) if origin is not None else points
     for point in points:
         norm = np.linalg.norm(point)
@@ -76,3 +76,7 @@ def filter_embeddings(embeddings):
     filtered_embeddings = KeyedVectors(vector_size=embeddings.vector_size)
     filtered_embeddings.add_vectors(filtered_keys, filtered_vectors)
     return filtered_embeddings
+
+
+def compute_cosine_similarity(vector1, vector2):
+    return np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2))

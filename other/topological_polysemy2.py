@@ -24,7 +24,7 @@ def calculate_in_parallel(point_cloud, distance_metric, neighborhood_size):
 
 
 def _calculate(query, neighborhood, distance_metric):
-    projected_neighborhood = project_to_unit_circle(neighborhood, query.point)
+    projected_neighborhood = project_to_unit_sphere(neighborhood, query.point)
     zeroth_persistence_diagram = ripser.ripser(projected_neighborhood, maxdim=0)['dgms'][0]
 
     if distance_metric == 'w':

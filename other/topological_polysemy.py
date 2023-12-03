@@ -18,7 +18,7 @@ def _calculate(point_cloud, distance_metric, neighborhood_size):
         progress = f'Query point {index + 1} out of {len(point_cloud.queries)}.'
         print(progress, end='\r')
 
-        projected_neighborhood = project_to_unit_circle(neighborhood, query.point)
+        projected_neighborhood = project_to_unit_sphere(neighborhood, query.point)
         zeroth_persistence_diagram = ripser.ripser(projected_neighborhood, maxdim=0)['dgms'][0]
 
         if distance_metric == 'w':

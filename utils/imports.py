@@ -20,3 +20,4 @@ from gudhi.wasserstein.wasserstein import wasserstein_distance
 from gudhi.bottleneck import bottleneck_distance
 import scienceplots
 from sklearn.decomposition import PCA
+from scipy.stats import pearsonr

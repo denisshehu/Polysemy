@@ -26,7 +26,7 @@ def _calculate(query, query_annuli):
     estimates = dict()
     for annulus, s, r in query_annuli:
         if len(annulus) != 0:
-            projected_annulus = project_to_unit_circle(annulus, query.point)
+            projected_annulus = project_to_unit_sphere(annulus, query.point)
             zeroth_persistence_diagram = ripser.ripser(projected_annulus, maxdim=0)['dgms'][0]
             estimate = wasserstein_distance(X=zeroth_persistence_diagram, Y=np.array([[0, np.inf]]))
             estimates[(s, r)] = estimate
