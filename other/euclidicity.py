@@ -15,7 +15,7 @@ def calculate_euclidicity(point_cloud, neighborhood_size, n_steps, filename_pref
 
 
 def calculate(point_cloud, neighborhood_size, n_steps):
-    annuli = point_cloud.get_annuli(neighborhood_size, n_steps)
+    annuli = point_cloud.get_annuli1(neighborhood_size, n_steps)
 
     for i, (query, query_annuli) in enumerate(zip(point_cloud.queries, annuli)):
         dimension = query.intrinsic_dimension

@@ -10,7 +10,7 @@ import yaml
 import pandas as pd
 import gensim.downloader
 from gensim.models import FastText
-from gph import ripser_parallel
+import matplotlib
 import matplotlib.pyplot as plt
 import ripser
 from skdim.id import DANCo
@@ -20,4 +20,4 @@ from gudhi.wasserstein.wasserstein import wasserstein_distance
 from gudhi.bottleneck import bottleneck_distance
 import scienceplots
 from sklearn.decomposition import PCA
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, spearmanr

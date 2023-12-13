@@ -38,7 +38,7 @@ def _calculate(query, query_annuli):
 
 
 def compute_persistence_diagram(points, dimension, scaler, origin=None):
-    points = scale(points, origin, scaler)
+    # points = scale(points, origin, scaler)
     persistence_diagrams = ripser.ripser(X=points, maxdim=(dimension - 1))['dgms']
     filtered_persistence_diagrams = filter_persistence_diagrams(persistence_diagrams)
     return np.row_stack(filtered_persistence_diagrams)

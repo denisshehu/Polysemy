@@ -26,7 +26,7 @@ def _estimate(query, query_annuli, maximum_dimension):
     for annulus, _, _ in query_annuli:
         if len(annulus) != 0:
             persistence_diagrams = ripser.ripser(X=annulus, maxdim=(maximum_dimension - 1))['dgms']
-            persistence_diagrams = filter_persistence_diagrams(persistence_diagrams)
+            # persistence_diagrams = filter_persistence_diagrams(persistence_diagrams)
             estimates.append(len(persistence_diagrams))
 
     return query.identifier, estimates

@@ -55,11 +55,6 @@ def filter_persistence_diagrams(persistence_diagrams):
         if len(filtered_persistence_diagrams[i]) > 0:
             max_i = max(max_i, i)
 
-    with open('C:\\Users\\its_d\\Desktop\\diagrams.txt', 'a') as file:
-        for diagram in filtered_persistence_diagrams:
-            file.write(f'{len(diagram)} ')
-        file.write(f'\t| {max_i} \n')
-
     filtered_persistence_diagrams = [diagram for diagram in filtered_persistence_diagrams if len(diagram) > 0]
     return filtered_persistence_diagrams
 
@@ -71,7 +66,17 @@ def save_point_cloud(point_cloud, filename_prefix):
 
 
 def filter_embeddings(embeddings):
-    filtered_keys = [key for key in embeddings.index_to_key if len(wordnet.synsets(key)) > 0 and not key.isdigit()]
+    filtered_keys = list()
+    for key in embeddings.index_to_key:
+        if len(wordnet.synsets(key)) > 0:
+            if not key.isdigit():
+                if key == key.lower():
+                    filtered_keys.append(key)
+                else:
+                    try:
+                        e = embeddings[key.lower()]
+                    except:
+                        filtered_keys.append(key)
     filtered_vectors = [embeddings[key] for key in filtered_keys]
     filtered_embeddings = KeyedVectors(vector_size=embeddings.vector_size)
     filtered_embeddings.add_vectors(filtered_keys, filtered_vectors)

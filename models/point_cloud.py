@@ -106,7 +106,13 @@ class PointCloud:
         annulus = (self._points[annulus_indices], s, r)
         return annulus
 
-    def get_annuli(self, neighborhood_size, n_steps):
+    def get_annuli(self, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps):
+        if None in [min_to_max_s_ratio, r_to_s_ratio]:
+            return self.get_annuli1(neighborhood_size, n_steps)
+        else:
+            return self.get_annuli2(neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps)
+
+    def get_annuli1(self, neighborhood_size, n_steps):
         distances, indices = self._get_distances_and_indices(neighborhood_size)
         radii = [[d[0], d[neighborhood_size // 3 - 1], d[-1]] for d in distances]
 

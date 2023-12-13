@@ -8,7 +8,7 @@ def detect(point_cloud, neighborhood_size, min_to_max_s_ratio=1, r_to_s_ratio=0.
 
 def detect_in_parallel(point_cloud, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps):
     if None in [min_to_max_s_ratio, r_to_s_ratio]:
-        annuli = point_cloud.get_annuli(neighborhood_size, n_steps)
+        annuli = point_cloud.get_annuli1(neighborhood_size, n_steps)
     else:
         annuli = point_cloud.get_annuli2(neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps)
 
