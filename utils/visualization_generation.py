@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
 from utils.functions import *
 from utils.variables import *
 
@@ -28,6 +31,15 @@ positions = [0.0, 0.25, 0.5, 0.75, 1.0]
 my_colormap = matplotlib.colors.LinearSegmentedColormap.from_list('my_colormap', list(zip(positions, colors)))
 
 
+def get_label(attribute):
+    if attribute == 'topological_polysemy' or attribute == 'classification':
+        return attribute.replace('_', ' ').capitalize()
+    elif attribute == 'euclidicity':
+        return 'Euclidicity score'
+    elif attribute == 'intrinsic_dimension':
+        return 'Estimated intrinsic dimension'
+
+
 def visualize_topological_polysemy(point_cloud, figure_name_prefix, colormap=my_colormap, elev=None, azim=None,
                                    roll=None, hide_x_tick_labels=True, hide_y_tick_labels=True,
                                    hide_z_tick_labels=True, hide_color_bar=False):
@@ -52,9 +64,9 @@ def visualize_euclidicity(point_cloud, figure_name_prefix, colormap=my_colormap,
                          hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
 
 
-def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plots=True, colormap=my_colormap,
-                        elev=None, azim=None, roll=None, hide_x_tick_labels=True, hide_y_tick_labels=True,
-                        hide_z_tick_labels=True, hide_color_bar=False):
+def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plots=True, known_dimension=None,
+                        colormap=my_colormap, elev=None, azim=None, roll=None, hide_x_tick_labels=True,
+                        hide_y_tick_labels=True, hide_z_tick_labels=True, hide_color_bar=False):
     attribute = 'intrinsic_dimension'
     _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
                          hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
@@ -72,19 +84,20 @@ def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plot
 
                 are_words_none = None in [query.word for query in point_cloud.queries]
                 q = query.word if not are_words_none else query.identifier
-                x_label = 'Neighborhood size'
-                y_label = attribute.replace('_', ' ').capitalize()
+                x_label = 'Neighborhood cardinality'
+                y_label = get_label(attribute)
                 figure_name = f'{figure_name_prefix}_{q}_{estimates_type}_{attribute}'
-                figure_size = None#(9, 3)
+                figure_size = (10, 4.8)
 
-                plot_line_plot(x, y, x_label, y_label, min_x, max_x, min_y, max_y, figure_name, figure_size)
+                plot_line_plot(x, y, x_label, y_label, min_x, max_x, min_y, max_y,
+                               a=known_dimension, figure_name=figure_name, figure_size=figure_size)
 
 
 def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
                          hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar):
     points = point_cloud.get_query_points()
     attribute_values = np.array([getattr(query, attribute) for query in point_cloud.queries])
-    label = attribute.replace('_', ' ').capitalize()
+    label = get_label(attribute)
 
     # 3D plot
     color_bar_label = label
@@ -103,7 +116,7 @@ def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, e
     x_label = label
     y_label = 'Word type' if not are_words_none else None
     figure_name = f'{figure_name_prefix}_plot_summary_{attribute}'
-    figure_size = None#(9, 3)
+    figure_size = None  # (9, 3)
 
     plot_scatterplot(attribute_values, y, x_label, y_label, hide_y_tick_labels=are_words_none,
                      figure_name=figure_name, figure_size=figure_size)
@@ -131,7 +144,7 @@ def visualize_neighborhood_eigenvalues(point_cloud, figure_name_prefix):
         colors.append(color)
 
     figure_name = f'{figure_name_prefix}_eigenvalues'
-    figure_size = None#(9, 3)
+    figure_size = None  # (9, 3)
     plot_multiple_scatterplots(xs, ys, labels, colors, figure_name=figure_name, figure_size=figure_size)
 
 
@@ -158,6 +171,28 @@ def _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, 
                          figure_name, figure_size):
     fig = plt.figure(figsize=figure_size)
     ax = fig.add_subplot(projection='3d')
+
+    if type(values[0]) is np.str_:
+        hide_color_bar = True
+
+        colors = [purple, blue, red]
+        positions = [0.0, 0.5, 1.0]
+        colormap = matplotlib.colors.LinearSegmentedColormap.from_list('colormap', list(zip(positions, colors)))
+
+        new_values = list()
+        for value in values:
+            if value == 'boundary':
+                new_values.append(0)
+            elif value == 'regular':
+                new_values.append(1)
+            else:
+                new_values.append(2)
+        values = new_values
+
+        labels = ['boundary', 'regular', 'singular']
+        dummy = [ax.scatter([], [], ls='-', c=c) for c in colors]
+        ax.legend(dummy, labels)
+
     scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
     ax.set_aspect('equal')
     ax.view_init(elev=elev, azim=azim, roll=roll)
@@ -227,8 +262,21 @@ def plot_multiple_scatterplots(xs, ys, labels, colors, x_label=None, y_label=Non
 
 
 def plot_line_plot(x, y, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None,
+                   use_x_log_scale=False, use_y_log_scale=False, plot_y_equals_x=False, a=None,
                    figure_name=None, figure_size=None):
     fig, ax = plt.subplots(figsize=figure_size)
+
+    if use_x_log_scale:
+        plt.xscale('log')
+    if use_y_log_scale:
+        plt.yscale('log')
+
+    if plot_y_equals_x:
+        ax.plot([min_x, max_x], [min_y, max_y], linestyle='-', color=red)
+
+    if a is not None:
+        ax.plot([min_x, max_x], [a, a], linestyle='-', color=red)
+
     ax.plot(x, y, 'k:o', markersize=4)
     ax.set_xlabel(x_label, fontsize=label_font_size)
     ax.set_ylabel(y_label, fontsize=label_font_size)
@@ -241,3 +289,22 @@ def plot_line_plot(x, y, x_label=None, y_label=None, min_x=None, max_x=None, min
         plt.close()
     else:
         plt.show()
+
+    # if type(values[0]) is not np.str_:
+    #     scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
+    #
+    #     if not hide_color_bar:
+    #         fig.colorbar(scatter).set_label(color_bar_label, fontsize=label_font_size)
+    #
+    # else:
+    #     regular = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'regular'])
+    #     boundary = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'boundary'])
+    #     singular = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'singular'])
+    #
+    #     if np.shape(boundary)[0] > 0:
+    #         ax.scatter(boundary[:, 0], boundary[:, 1], boundary[:, 2], c=purple, label='boundary')
+    #     if np.shape(regular)[0] > 0:
+    #         ax.scatter(regular[:, 0], regular[:, 1], regular[:, 2], c=blue, label='regular')
+    #     if np.shape(singular)[0] > 0:
+    #         ax.scatter(singular[:, 0], singular[:, 1], singular[:, 2], c=red, label='singular')
+    #     ax.legend()

@@ -75,6 +75,10 @@ class PointCloud:
     def queries(self):
         return self._queries
 
+    @queries.setter
+    def queries(self, queries):
+        self._queries = queries
+
     def get_query_points(self):
         query_points = np.array([query.point for query in self._queries])
         return query_points

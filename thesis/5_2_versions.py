@@ -10,9 +10,9 @@ n = 20000
 intrinsic_dimension = 2
 r = 1
 seed = 1
-ambient_dimension = 2
+ambient_dimension = intrinsic_dimension
 n_queries = 1000
-neighborhood_size = 200
+neighborhood_size = 5#200
 maximum_dimension = 3
 n_steps = 10
 
@@ -20,7 +20,7 @@ iterations = [('original', estimate_original, calculate_original), ('filtered', 
               ('scaled', estimate, calculate), ('no_estimation', None, calculate)]
 
 for string, estimation_method, calculation_method in iterations:
-    prefix = f'5_2_{string}'
+    prefix = f'5_2_versions_{string}'
     points = sample_from_ball(n, intrinsic_dimension, r, seed, ambient_dimension)
     point_cloud = PointCloud()
     point_cloud.random_constructor(points, n_queries, seed)
