@@ -15,7 +15,7 @@ scaled = list()
 
 for r in r_values:
     for string, calculation_method in [('not_scaled', calculate_not_scaled), ('scaled', calculate_scaled)]:
-        prefix = f'5_2_r{r}_{string}'
+        prefix = f'r{r}_{string}'
 
         points = sample_from_ball(n, intrinsic_dimension, r, seed, ambient_dimension)
         point_cloud = PointCloud()
@@ -33,6 +33,5 @@ for r in r_values:
 
 x_label, y_label = 'Radius', 'Euclidicity score'
 min_y, max_y = 0, 0.4
-plot_line_plot(r_values, not_scaled, x_label, y_label, use_x_log_scale=True, figure_name='5_2_not_scaled')
-plot_line_plot(r_values, scaled, x_label, y_label, min_y=min_y, max_y=max_y, use_x_log_scale=True,
-               figure_name='5_2_scaled')
+plot_line_plot(r_values, not_scaled, x_label, y_label, use_x_log_scale=True, figure_name='not_scaled')
+plot_line_plot(r_values, scaled, x_label, y_label, min_y=min_y, max_y=max_y, use_x_log_scale=True, figure_name='scaled')

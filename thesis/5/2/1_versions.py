@@ -12,7 +12,7 @@ r = 1
 seed = 1
 ambient_dimension = intrinsic_dimension
 n_queries = 1000
-neighborhood_size = 5#200
+neighborhood_size = 200
 maximum_dimension = 3
 n_steps = 10
 
@@ -20,7 +20,6 @@ iterations = [('original', estimate_original, calculate_original), ('filtered', 
               ('scaled', estimate, calculate), ('no_estimation', None, calculate)]
 
 for string, estimation_method, calculation_method in iterations:
-    prefix = f'5_2_versions_{string}'
     points = sample_from_ball(n, intrinsic_dimension, r, seed, ambient_dimension)
     point_cloud = PointCloud()
     point_cloud.random_constructor(points, n_queries, seed)
@@ -29,8 +28,8 @@ for string, estimation_method, calculation_method in iterations:
         for query in point_cloud.queries:
             query.intrinsic_dimension = intrinsic_dimension
     else:
-        estimation_method(point_cloud, neighborhood_size, maximum_dimension, n_steps=n_steps, filename_prefix=prefix)
-    visualize_dimension(point_cloud, prefix, include_individual_plots=False)
+        estimation_method(point_cloud, neighborhood_size, maximum_dimension, n_steps=n_steps, filename_prefix=string)
+    visualize_dimension(point_cloud, string, include_individual_plots=False)
 
-    calculation_method(point_cloud, neighborhood_size, n_steps=n_steps, filename_prefix=prefix)
-    visualize_euclidicity(point_cloud, prefix)
+    calculation_method(point_cloud, neighborhood_size, n_steps=n_steps, filename_prefix=string)
+    visualize_euclidicity(point_cloud, string)

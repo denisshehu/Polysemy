@@ -1,14 +1,5 @@
-import matplotlib.pyplot as plt
-import numpy as np
-
 from utils.functions import *
 from utils.variables import *
-
-
-def hex_to_rgb(hex_color):
-    hex_color = hex_color.lstrip('#')
-    return tuple(int(hex_color[i:(i + 2)], 16) / 255.0 for i in (0, 2, 4))
-
 
 plt.rcParams.update({
     'font.family': 'serif',
@@ -20,15 +11,19 @@ plt.rcParams.update({
 })
 label_font_size = 14
 
+
+def hex_to_rgb(hex_color):
+    hex_color = hex_color.lstrip('#')
+    return tuple(int(hex_color[i:(i + 2)], 16) / 255.0 for i in (0, 2, 4))
+
+
 blue = hex_to_rgb('#648FFF')
 purple = hex_to_rgb('#785EF0')
 red = hex_to_rgb('#DC267F')
 orange = hex_to_rgb('#FE6100')
 yellow = hex_to_rgb('#FFB000')
-
-colors = [blue, purple, red, orange, yellow]
-positions = [0.0, 0.25, 0.5, 0.75, 1.0]
-my_colormap = matplotlib.colors.LinearSegmentedColormap.from_list('my_colormap', list(zip(positions, colors)))
+my_colormap = matplotlib.colors.LinearSegmentedColormap.from_list(
+    'my_colormap', list(zip([0.0, 0.25, 0.5, 0.75, 1.0], [blue, purple, red, orange, yellow])))
 
 
 def get_label(attribute):
@@ -40,36 +35,37 @@ def get_label(attribute):
         return 'Estimated intrinsic dimension'
 
 
-def visualize_topological_polysemy(point_cloud, figure_name_prefix, colormap=my_colormap, elev=None, azim=None,
-                                   roll=None, hide_x_tick_labels=True, hide_y_tick_labels=True,
-                                   hide_z_tick_labels=True, hide_color_bar=False):
+def visualize_topological_polysemy(point_cloud, figure_name_prefix, colormap=my_colormap, color_bar_min=None,
+                                   color_bar_max=None, elev=None, azim=None, roll=None, hide_x_tick_labels=True,
+                                   hide_y_tick_labels=True, hide_z_tick_labels=True, hide_color_bar=False):
     attribute = 'topological_polysemy'
-    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
-                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
+    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
+                         elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
 
 
-def visualize_classification(point_cloud, figure_name_prefix, colormap=my_colormap, elev=None, azim=None, roll=None,
-                             hide_x_tick_labels=True, hide_y_tick_labels=True, hide_z_tick_labels=True,
-                             hide_color_bar=False):
+def visualize_classification(point_cloud, figure_name_prefix, colormap=my_colormap, color_bar_min=-0.2,
+                             color_bar_max=2.2, elev=None, azim=None, roll=None, hide_x_tick_labels=True,
+                             hide_y_tick_labels=True, hide_z_tick_labels=True, hide_color_bar=False):
     attribute = 'classification'
-    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
-                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
+    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
+                         elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
 
 
-def visualize_euclidicity(point_cloud, figure_name_prefix, colormap=my_colormap, elev=None, azim=None, roll=None,
-                          hide_x_tick_labels=True, hide_y_tick_labels=True, hide_z_tick_labels=True,
-                          hide_color_bar=False):
+def visualize_euclidicity(point_cloud, figure_name_prefix, colormap=my_colormap, color_bar_min=None,
+                          color_bar_max=None, elev=None, azim=None, roll=None, hide_x_tick_labels=True,
+                          hide_y_tick_labels=True, hide_z_tick_labels=True, hide_color_bar=False):
     attribute = 'euclidicity'
-    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
-                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
+    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
+                         elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
 
 
 def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plots=True, known_dimension=None,
-                        colormap=my_colormap, elev=None, azim=None, roll=None, hide_x_tick_labels=True,
-                        hide_y_tick_labels=True, hide_z_tick_labels=True, hide_color_bar=False):
+                        colormap=my_colormap, color_bar_min=None, color_bar_max=None, elev=None, azim=None, roll=None,
+                        hide_x_tick_labels=True, hide_y_tick_labels=True, hide_z_tick_labels=True,
+                        hide_color_bar=False):
     attribute = 'intrinsic_dimension'
-    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
-                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
+    _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
+                         elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
 
     # Individual plots
     if include_individual_plots:
@@ -93,8 +89,8 @@ def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plot
                                a=known_dimension, figure_name=figure_name, figure_size=figure_size)
 
 
-def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, elev, azim, roll,
-                         hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar):
+def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
+                         elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar):
     points = point_cloud.get_query_points()
     attribute_values = np.array([getattr(query, attribute) for query in point_cloud.queries])
     label = get_label(attribute)
@@ -104,8 +100,8 @@ def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, e
     figure_name = f'{figure_name_prefix}_3d_plot_{attribute}'
     # figure_size = (3, 3)
 
-    plot_3d_scatterplot(points, attribute_values, colormap, color_bar_label, elev, azim, roll,
-                        hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar,
+    plot_3d_scatterplot(points, attribute_values, colormap, color_bar_label, color_bar_min, color_bar_max,
+                        elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar,
                         figure_name)
 
     # Summary plot
@@ -118,8 +114,8 @@ def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, e
     figure_name = f'{figure_name_prefix}_plot_summary_{attribute}'
     figure_size = None  # (9, 3)
 
-    plot_scatterplot(attribute_values, y, x_label, y_label, hide_y_tick_labels=are_words_none,
-                     figure_name=figure_name, figure_size=figure_size)
+    plot_scatterplot(attribute_values, y, x_label, y_label, color_bar_min, color_bar_max,
+                     hide_y_tick_labels=are_words_none, figure_name=figure_name, figure_size=figure_size)
 
 
 def visualize_neighborhood_eigenvalues(point_cloud, figure_name_prefix):
@@ -148,8 +144,9 @@ def visualize_neighborhood_eigenvalues(point_cloud, figure_name_prefix):
     plot_multiple_scatterplots(xs, ys, labels, colors, figure_name=figure_name, figure_size=figure_size)
 
 
-def plot_3d_scatterplot(points, values=None, colormap=my_colormap, color_bar_label=None, elev=None, azim=None,
-                        roll=None, hide_x_tick_labels=False, hide_y_tick_labels=False, hide_z_tick_labels=False,
+def plot_3d_scatterplot(points, values=None, colormap=my_colormap, color_bar_label=None,
+                        color_bar_min=None, color_bar_max=None, elev=None, azim=None, roll=None,
+                        hide_x_tick_labels=False, hide_y_tick_labels=False, hide_z_tick_labels=False,
                         hide_color_bar=False, figure_name=None, figure_size=None):
     dimension = points.shape[-1]
 
@@ -161,12 +158,12 @@ def plot_3d_scatterplot(points, values=None, colormap=my_colormap, color_bar_lab
             azim = 0 if azim is None else azim
             hide_z_tick_labels = True
 
-        _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, roll,
+        _plot_3d_scatterplot(points, values, colormap, color_bar_label, color_bar_min, color_bar_max, elev, azim, roll,
                              hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar,
                              figure_name, figure_size)
 
 
-def _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, roll,
+def _plot_3d_scatterplot(points, values, colormap, color_bar_label, color_bar_min, color_bar_max, elev, azim, roll,
                          hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar,
                          figure_name, figure_size):
     fig = plt.figure(figsize=figure_size)
@@ -175,7 +172,7 @@ def _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, 
     if type(values[0]) is np.str_:
         hide_color_bar = True
 
-        colors = [purple, blue, red]
+        colors = [blue, purple, red]
         positions = [0.0, 0.5, 1.0]
         colormap = matplotlib.colors.LinearSegmentedColormap.from_list('colormap', list(zip(positions, colors)))
 
@@ -191,9 +188,10 @@ def _plot_3d_scatterplot(points, values, colormap, color_bar_label, elev, azim, 
 
         labels = ['boundary', 'regular', 'singular']
         dummy = [ax.scatter([], [], ls='-', c=c) for c in colors]
-        ax.legend(dummy, labels)
+        ax.legend(dummy, labels, loc='upper right')
 
     scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
+    scatter.set_clim(vmin=color_bar_min, vmax=color_bar_max)
     ax.set_aspect('equal')
     ax.view_init(elev=elev, azim=azim, roll=roll)
 
