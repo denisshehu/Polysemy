@@ -1,3 +1,5 @@
+import numpy as np
+
 from utils.main import *
 
 
@@ -28,7 +30,8 @@ def _calculate(query, query_annuli):
         if len(annulus) != 0:
             diagram1 = compute_persistence_diagram(annulus, dimension, s, query.point)
 
-            euclidean_annulus = sample_from_annulus(len(annulus), dimension, s, r, seed=1)
+            euclidean_annulus = sample_from_annulus(len(annulus), dimension, s, r, seed=1,
+                                                    ambient_dimension=np.shape(query.point)[0])
             diagram2 = compute_persistence_diagram(euclidean_annulus, dimension, s)
 
             estimate = bottleneck_distance(diagram1, diagram2)

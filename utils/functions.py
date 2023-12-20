@@ -50,10 +50,10 @@ def filter_persistence_diagrams(persistence_diagrams):
         filtered_persistence_diagrams.append(np.array(filtered_persistence_diagram))
         threshold = max(threshold, diagram_highest_persistence)
 
-    max_i = -1
-    for i in range(len(filtered_persistence_diagrams)):
-        if len(filtered_persistence_diagrams[i]) > 0:
-            max_i = max(max_i, i)
+    # max_i = -1
+    # for i in range(len(filtered_persistence_diagrams)):
+    #     if len(filtered_persistence_diagrams[i]) > 0:
+    #         max_i = max(max_i, i)
 
     filtered_persistence_diagrams = [diagram for diagram in filtered_persistence_diagrams if len(diagram) > 0]
     return filtered_persistence_diagrams
@@ -66,21 +66,35 @@ def save_point_cloud(point_cloud, filename_prefix):
 
 
 def filter_embeddings(embeddings):
-    filtered_keys = list()
+    filtered_embeddings = dict()
     for key in embeddings.index_to_key:
-        if len(wordnet.synsets(key)) > 0:
-            if not key.isdigit():
-                if key == key.lower():
-                    filtered_keys.append(key)
-                else:
-                    try:
-                        e = embeddings[key.lower()]
-                    except:
-                        filtered_keys.append(key)
-    filtered_vectors = [embeddings[key] for key in filtered_keys]
-    filtered_embeddings = KeyedVectors(vector_size=embeddings.vector_size)
-    filtered_embeddings.add_vectors(filtered_keys, filtered_vectors)
-    return filtered_embeddings
+        if len(wordnet.synsets(key)) > 0 and not key.isdigit():
+            # filtered_embeddings[key] = embeddings[key]
+            lowercase_key = key.lower()
+            if lowercase_key not in filtered_embeddings.keys():
+                filtered_embeddings[lowercase_key] = embeddings[key]
+
+    keyed_vectors = KeyedVectors(vector_size=embeddings.vector_size)
+    keyed_vectors.add_vectors(list(filtered_embeddings.keys()), list(filtered_embeddings.values()))
+    return keyed_vectors
+
+
+# def filter_embeddings(embeddings):
+#     filtered_keys = list()
+#     for key in embeddings.index_to_key:
+#         if len(wordnet.synsets(key)) > 0:
+#             if not key.isdigit():
+#                 if key == key.lower():
+#                     filtered_keys.append(key)
+#                 else:
+#                     try:
+#                         e = embeddings[key.lower()]
+#                     except:
+#                         filtered_keys.append(key)
+#     filtered_vectors = [embeddings[key] for key in filtered_keys]
+#     filtered_embeddings = KeyedVectors(vector_size=embeddings.vector_size)
+#     filtered_embeddings.add_vectors(filtered_keys, filtered_vectors)
+#     return filtered_embeddings
 
 
 def compute_cosine_similarity(vector1, vector2):

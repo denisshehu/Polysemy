@@ -10,9 +10,9 @@ results_directory = os.path.join(project_directory, 'results')
 utils_directory = os.path.join(project_directory, 'utils')
 
 # Depth 2
+word2vec_embeddings_path = os.path.join(embeddings_directory, 'word2vec.bin')
 fasttext_embeddings_path = os.path.join(embeddings_directory, 'fasttext.bin')
 glove_embeddings_path = os.path.join(embeddings_directory, 'glove.txt')
-word2vec_embeddings_path = os.path.join(embeddings_directory, 'word2vec.bin')
 
 ws_path = os.path.join(evaluation_directory, 'ws.txt')
 ws_similarity_path = os.path.join(evaluation_directory, 'ws_similarity.txt')

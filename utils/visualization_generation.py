@@ -169,7 +169,7 @@ def _plot_3d_scatterplot(points, values, colormap, color_bar_label, color_bar_mi
     fig = plt.figure(figsize=figure_size)
     ax = fig.add_subplot(projection='3d')
 
-    if type(values[0]) is np.str_:
+    if values is not None and type(values[0]) is np.str_:
         hide_color_bar = True
 
         colors = [blue, purple, red]
@@ -259,7 +259,7 @@ def plot_multiple_scatterplots(xs, ys, labels, colors, x_label=None, y_label=Non
         plt.show()
 
 
-def plot_line_plot(x, y, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None,
+def plot_line_plot(x, y1, y2=None, y3=None, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None,
                    use_x_log_scale=False, use_y_log_scale=False, plot_y_equals_x=False, a=None,
                    figure_name=None, figure_size=None):
     fig, ax = plt.subplots(figsize=figure_size)
@@ -275,7 +275,17 @@ def plot_line_plot(x, y, x_label=None, y_label=None, min_x=None, max_x=None, min
     if a is not None:
         ax.plot([min_x, max_x], [a, a], linestyle='-', color=red)
 
-    ax.plot(x, y, 'k:o', markersize=4)
+    if y2 is None:
+        ax.plot(x, y1, 'k:o', markersize=4)
+    else:
+        ax.plot(x, y1, color=blue, marker='o', linestyle=':', markersize=4, label='regular')
+        if y3 is None:
+            ax.plot(x, y2, color=red, marker='o', linestyle=':', markersize=4, label='singular')
+        else:
+            ax.plot(x, y2, color=purple, marker='o', linestyle=':', markersize=4, label='singular (cones)')
+            ax.plot(x, y3, color=red, marker='o', linestyle=':', markersize=4, label='singular (planes)')
+        ax.legend()
+
     ax.set_xlabel(x_label, fontsize=label_font_size)
     ax.set_ylabel(y_label, fontsize=label_font_size)
     ax.set_xlim(min_x, max_x)
@@ -288,21 +298,52 @@ def plot_line_plot(x, y, x_label=None, y_label=None, min_x=None, max_x=None, min
     else:
         plt.show()
 
-    # if type(values[0]) is not np.str_:
-    #     scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
-    #
-    #     if not hide_color_bar:
-    #         fig.colorbar(scatter).set_label(color_bar_label, fontsize=label_font_size)
-    #
-    # else:
-    #     regular = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'regular'])
-    #     boundary = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'boundary'])
-    #     singular = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'singular'])
-    #
-    #     if np.shape(boundary)[0] > 0:
-    #         ax.scatter(boundary[:, 0], boundary[:, 1], boundary[:, 2], c=purple, label='boundary')
-    #     if np.shape(regular)[0] > 0:
-    #         ax.scatter(regular[:, 0], regular[:, 1], regular[:, 2], c=blue, label='regular')
-    #     if np.shape(singular)[0] > 0:
-    #         ax.scatter(singular[:, 0], singular[:, 1], singular[:, 2], c=red, label='singular')
-    #     ax.legend()
+
+# def plot_two_line_plots(x, y1, y2, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None,
+#                         use_x_log_scale=False, use_y_log_scale=False, plot_y_equals_x=False, a=None,
+#                         figure_name=None, figure_size=None):
+#     fig, ax = plt.subplots(figsize=figure_size)
+#
+#     if use_x_log_scale:
+#         plt.xscale('log')
+#     if use_y_log_scale:
+#         plt.yscale('log')
+#
+#     if plot_y_equals_x:
+#         ax.plot([min_x, max_x], [min_y, max_y], linestyle='-', color=red)
+#
+#     if a is not None:
+#         ax.plot([min_x, max_x], [a, a], linestyle='-', color=red)
+#
+#     ax.plot(x, y1, color=blue, marker='o', linestyle=':', markersize=4)
+#     ax.plot(x, y2, color=purple, marker='o', linestyle=':', markersize=4)
+#     ax.set_xlabel(x_label, fontsize=label_font_size)
+#     ax.set_ylabel(y_label, fontsize=label_font_size)
+#     ax.set_xlim(min_x, max_x)
+#     ax.set_ylim(min_y, max_y)
+#
+#     if figure_name is not None:
+#         figure_path = os.path.join(results_directory, f'{figure_name}.png')
+#         plt.savefig(figure_path, dpi=300)
+#         plt.close()
+#     else:
+#         plt.show()
+
+# if type(values[0]) is not np.str_:
+#     scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
+#
+#     if not hide_color_bar:
+#         fig.colorbar(scatter).set_label(color_bar_label, fontsize=label_font_size)
+#
+# else:
+#     regular = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'regular'])
+#     boundary = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'boundary'])
+#     singular = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'singular'])
+#
+#     if np.shape(boundary)[0] > 0:
+#         ax.scatter(boundary[:, 0], boundary[:, 1], boundary[:, 2], c=purple, label='boundary')
+#     if np.shape(regular)[0] > 0:
+#         ax.scatter(regular[:, 0], regular[:, 1], regular[:, 2], c=blue, label='regular')
+#     if np.shape(singular)[0] > 0:
+#         ax.scatter(singular[:, 0], singular[:, 1], singular[:, 2], c=red, label='singular')
+#     ax.legend()
