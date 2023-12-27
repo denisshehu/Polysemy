@@ -18,6 +18,7 @@ data = [
 ]
 
 neighborhood_size = 400
+threshold = 0.1
 min_to_max_s_ratio = 1
 r_to_s_ratio = 0.5
 n_steps = 1
@@ -37,7 +38,8 @@ for i, (string, points, elev, azim) in enumerate(data):
     #     else:
     #         query.intrinsic_dimension = intrinsic_dimension
     #
-    # calculate(point_cloud, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps, filename_prefix=prefix)
+    # calculate(point_cloud, neighborhood_size, threshold, min_to_max_s_ratio, r_to_s_ratio, n_steps,
+    #           filename_prefix=prefix)
     point_cloud = load_yaml(os.path.join(results_directory, f'{prefix}_point_cloud.yaml'))
 
     new_queries = list()

@@ -1,6 +1,6 @@
 from models.point_cloud import *
-from methods.euclidicity_filtered import calculate as calculate_not_scaled
-from methods.euclidicity import calculate as calculate_scaled
+from methods.euclidicity_versions.euclidicity_no_scaling_dynamic_filtering import calculate as calculate_not_scaled
+from methods.euclidicity_versions.euclidicity_scaling_dynamic_filtering import calculate as calculate_scaled
 
 n = 20000
 intrinsic_dimension = 2
@@ -31,7 +31,8 @@ for r in r_values:
         else:
             scaled.append([query.euclidicity for query in point_cloud.queries])
 
+y1_label, y2_label = 'No scaling', 'Scaling'
 x_label, y_label = 'Radius', 'Euclidicity score'
 min_y, max_y = 0, 0.4
-plot_line_plot(r_values, not_scaled, x_label, y_label, use_x_log_scale=True, figure_name='not_scaled')
-plot_line_plot(r_values, scaled, x_label, y_label, min_y=min_y, max_y=max_y, use_x_log_scale=True, figure_name='scaled')
+plot_line_plot(r_values, not_scaled, scaled, y1_label=y1_label, y2_label=y2_label, x_label=x_label, y_label=y_label,
+               use_x_log_scale=True, use_y_log_scale=True, figure_name='scaling')

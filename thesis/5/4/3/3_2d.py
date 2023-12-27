@@ -18,12 +18,13 @@ data = [
 ]
 
 neighborhood_size = 250
+threshold = 0.1
 min_to_max_s_ratio = 1
 r_to_s_ratio = 0.5
 n_steps = 1
 n_queries = 10000
 color_bar_min = 0
-color_bar_max = 0.6
+color_bar_max = 0.55
 
 for i, (string, points, roll) in enumerate(data):
     prefix = f'{i + 1}_{string}'
@@ -37,13 +38,8 @@ for i, (string, points, roll) in enumerate(data):
     #     else:
     #         query.intrinsic_dimension = intrinsic_dimension
     #
-    # calculate(point_cloud, neighborhood_size, min_to_max_s_ratio, r_to_s_ratio, n_steps, filename_prefix=prefix)
+    # calculate(point_cloud, neighborhood_size, threshold, min_to_max_s_ratio, r_to_s_ratio, n_steps,
+    #           filename_prefix=prefix)
     point_cloud = load_yaml(os.path.join(results_directory, f'{prefix}_point_cloud.yaml'))
-
-    # new_queries = list()
-    # for query in point_cloud.queries:
-    #     if query.point[1] >= 0:
-    #         new_queries.append(query)
-    # point_cloud.queries = new_queries
 
     visualize_euclidicity(point_cloud, prefix, color_bar_min=color_bar_min, color_bar_max=color_bar_max, roll=roll)

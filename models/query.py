@@ -144,7 +144,7 @@ class Query:
 
     def _calculate_intrinsic_dimension(self):
         estimates = self._filtered_intrinsic_dimension_estimates.values()
-        intrinsic_dimension = round(sum(estimates) / len(estimates))
+        intrinsic_dimension = sum(estimates) / len(estimates)
 
         self._intrinsic_dimension = intrinsic_dimension
 

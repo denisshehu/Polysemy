@@ -85,8 +85,8 @@ def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plot
                 figure_name = f'{figure_name_prefix}_{q}_{estimates_type}_{attribute}'
                 figure_size = (10, 4.8)
 
-                plot_line_plot(x, y, x_label, y_label, min_x, max_x, min_y, max_y,
-                               a=known_dimension, figure_name=figure_name, figure_size=figure_size)
+                plot_line_plot(x, y, x_label=x_label, y_label=y_label, min_x=min_x, max_x=max_x, min_y=min_y,
+                               max_y=max_y, a=known_dimension, figure_name=figure_name, figure_size=figure_size)
 
 
 def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
@@ -259,8 +259,9 @@ def plot_multiple_scatterplots(xs, ys, labels, colors, x_label=None, y_label=Non
         plt.show()
 
 
-def plot_line_plot(x, y1, y2=None, y3=None, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None,
-                   use_x_log_scale=False, use_y_log_scale=False, plot_y_equals_x=False, a=None,
+def plot_line_plot(x, y1, y2=None, y3=None, y1_label=None, y2_label=None, y3_label=None, x_label=None, y_label=None,
+                   min_x=None, max_x=None, min_y=None, max_y=None, use_x_log_scale=False, use_y_log_scale=False,
+                   plot_y_equals_x=False, y_equals_x_label=None, a=None, a_label=None,
                    figure_name=None, figure_size=None):
     fig, ax = plt.subplots(figsize=figure_size)
 
@@ -270,20 +271,22 @@ def plot_line_plot(x, y1, y2=None, y3=None, x_label=None, y_label=None, min_x=No
         plt.yscale('log')
 
     if plot_y_equals_x:
-        ax.plot([min_x, max_x], [min_y, max_y], linestyle='-', color=red)
+        color = red if y2 is None else 'black'
+        ax.plot([min_x, max_x], [min_y, max_y], linestyle='-', color=color, label=y_equals_x_label)
 
     if a is not None:
-        ax.plot([min_x, max_x], [a, a], linestyle='-', color=red)
+        color = red if y2 is None else 'black'
+        ax.plot([min_x, max_x], [a, a], linestyle='-', color=color, label=a_label)
 
     if y2 is None:
-        ax.plot(x, y1, 'k:o', markersize=4)
+        ax.plot(x, y1, 'k:o', markersize=4, label=y1_label)
     else:
-        ax.plot(x, y1, color=blue, marker='o', linestyle=':', markersize=4, label='regular')
-        if y3 is None:
-            ax.plot(x, y2, color=red, marker='o', linestyle=':', markersize=4, label='singular')
-        else:
-            ax.plot(x, y2, color=purple, marker='o', linestyle=':', markersize=4, label='singular (cones)')
-            ax.plot(x, y3, color=red, marker='o', linestyle=':', markersize=4, label='singular (planes)')
+        ax.plot(x, y1, color=blue, marker='o', linestyle=':', markersize=4, label=y1_label)
+        ax.plot(x, y2, color=purple, marker='o', linestyle=':', markersize=4, label=y2_label)
+        if y3 is not None:
+            ax.plot(x, y3, color=red, marker='o', linestyle=':', markersize=4, label=y3_label)
+
+    if ax.get_legend_handles_labels()[1]:
         ax.legend()
 
     ax.set_xlabel(x_label, fontsize=label_font_size)
@@ -297,7 +300,6 @@ def plot_line_plot(x, y1, y2=None, y3=None, x_label=None, y_label=None, min_x=No
         plt.close()
     else:
         plt.show()
-
 
 # def plot_two_line_plots(x, y1, y2, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None,
 #                         use_x_log_scale=False, use_y_log_scale=False, plot_y_equals_x=False, a=None,

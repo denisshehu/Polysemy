@@ -1,9 +1,9 @@
 from models.point_cloud import *
 from methods.tardis import *
-from methods.euclidicity_original import calculate as calculate_original
-from methods.euclidicity_filtered import calculate as calculate_filtered
+from methods.euclidicity_versions.euclidicity_no_scaling_no_filtering import calculate as calculate_original
+from methods.euclidicity_versions.euclidicity_no_scaling_dynamic_filtering import calculate as calculate_filtered
 from methods.euclidicity import calculate
-from methods.intrinsic_dimension_estimators.pid_original import estimate as estimate_original
+from methods.intrinsic_dimension_estimators.pid_versions.pid_no_scaling_no_filtering import estimate as estimate_original
 from methods.intrinsic_dimension_estimators.pid import estimate
 
 n = 20000

@@ -28,7 +28,7 @@ def scale(points, origin, scaler):
     return points
 
 
-def filter_persistence_diagrams(persistence_diagrams):
+def filter_persistence_diagrams_dynamic(persistence_diagrams):
     filtered_persistence_diagrams = list()
 
     threshold = 0.0
@@ -50,10 +50,27 @@ def filter_persistence_diagrams(persistence_diagrams):
         filtered_persistence_diagrams.append(np.array(filtered_persistence_diagram))
         threshold = max(threshold, diagram_highest_persistence)
 
-    # max_i = -1
-    # for i in range(len(filtered_persistence_diagrams)):
-    #     if len(filtered_persistence_diagrams[i]) > 0:
-    #         max_i = max(max_i, i)
+    filtered_persistence_diagrams = [diagram for diagram in filtered_persistence_diagrams if len(diagram) > 0]
+    return filtered_persistence_diagrams
+
+
+def filter_persistence_diagrams_constant(persistence_diagrams, threshold):
+    filtered_persistence_diagrams = list()
+
+    for persistence_diagram in persistence_diagrams:
+        filtered_persistence_diagram = list()
+
+        for feature in persistence_diagram:
+            birth = feature[0]
+            death = feature[1]
+            if death != np.inf:
+                persistence = death - birth
+                if persistence >= threshold:
+                    filtered_persistence_diagram.append(feature)
+            else:
+                filtered_persistence_diagram.append(feature)
+
+        filtered_persistence_diagrams.append(np.array(filtered_persistence_diagram))
 
     filtered_persistence_diagrams = [diagram for diagram in filtered_persistence_diagrams if len(diagram) > 0]
     return filtered_persistence_diagrams
@@ -69,7 +86,6 @@ def filter_embeddings(embeddings):
     filtered_embeddings = dict()
     for key in embeddings.index_to_key:
         if len(wordnet.synsets(key)) > 0 and not key.isdigit():
-            # filtered_embeddings[key] = embeddings[key]
             lowercase_key = key.lower()
             if lowercase_key not in filtered_embeddings.keys():
                 filtered_embeddings[lowercase_key] = embeddings[key]
@@ -77,24 +93,6 @@ def filter_embeddings(embeddings):
     keyed_vectors = KeyedVectors(vector_size=embeddings.vector_size)
     keyed_vectors.add_vectors(list(filtered_embeddings.keys()), list(filtered_embeddings.values()))
     return keyed_vectors
-
-
-# def filter_embeddings(embeddings):
-#     filtered_keys = list()
-#     for key in embeddings.index_to_key:
-#         if len(wordnet.synsets(key)) > 0:
-#             if not key.isdigit():
-#                 if key == key.lower():
-#                     filtered_keys.append(key)
-#                 else:
-#                     try:
-#                         e = embeddings[key.lower()]
-#                     except:
-#                         filtered_keys.append(key)
-#     filtered_vectors = [embeddings[key] for key in filtered_keys]
-#     filtered_embeddings = KeyedVectors(vector_size=embeddings.vector_size)
-#     filtered_embeddings.add_vectors(filtered_keys, filtered_vectors)
-#     return filtered_embeddings
 
 
 def compute_cosine_similarity(vector1, vector2):
