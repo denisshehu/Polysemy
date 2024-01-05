@@ -1,3 +1,5 @@
+import numpy as np
+
 from utils.functions import *
 from utils.variables import *
 
@@ -33,6 +35,8 @@ def get_label(attribute):
         return 'Euclidicity score'
     elif attribute == 'intrinsic_dimension':
         return 'Estimated intrinsic dimension'
+    elif attribute == 'original_neighborhood_thickness' or attribute == 'translated_neighborhood_thickness':
+        return 'Neighborhood thickness'
 
 
 def visualize_topological_polysemy(point_cloud, figure_name_prefix, colormap=my_colormap, color_bar_min=None,
@@ -57,6 +61,16 @@ def visualize_euclidicity(point_cloud, figure_name_prefix, colormap=my_colormap,
     attribute = 'euclidicity'
     _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
                          elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar)
+
+
+def visualize_thickness(point_cloud, figure_name_prefix, colormap=my_colormap, color_bar_min=None,
+                        color_bar_max=None, elev=None, azim=None, roll=None, hide_x_tick_labels=True,
+                        hide_y_tick_labels=True, hide_z_tick_labels=True, hide_color_bar=False):
+    attributes = ['original_neighborhood_thickness', 'translated_neighborhood_thickness']
+    for attribute in attributes:
+        _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
+                             elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels,
+                             hide_color_bar)
 
 
 def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plots=True, known_dimension=None,
@@ -110,38 +124,60 @@ def _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, c
         [query.word_type.replace(' ', '\n') for query in point_cloud.queries]) if not are_words_none else np.ones(
         attribute_values.shape)
     x_label = label
-    y_label = 'Word type' if not are_words_none else None
+    y_label = 'Word class' if not are_words_none else None
     figure_name = f'{figure_name_prefix}_plot_summary_{attribute}'
-    figure_size = None  # (9, 3)
+    figure_size = (10, 4.8)
 
     plot_scatterplot(attribute_values, y, x_label, y_label, color_bar_min, color_bar_max,
                      hide_y_tick_labels=are_words_none, figure_name=figure_name, figure_size=figure_size)
 
 
-def visualize_neighborhood_eigenvalues(point_cloud, figure_name_prefix):
-    xs, ys, labels, colors = list(), list(), list(), list()
+def visualize_variance(point_cloud, figure_name):
+    y_monoseme = np.array([query.neighborhood_variance for query in point_cloud.queries
+                           if query.word_type == 'Monoseme'])
+    y_interclass = np.array([query.neighborhood_variance for query in point_cloud.queries
+                             if query.word_type == 'Interclass polyseme'])
+    y_intraclass = np.array([query.neighborhood_variance for query in point_cloud.queries
+                             if query.word_type == 'Intraclass polyseme'])
 
-    for query in point_cloud.queries:
-        y = query.neighborhood_eigenvalues
-        x = range(len(y))
-        label = query.word_type
-        if label == 'Monoseme':
-            color = 'red'
-        elif label == 'Inter-class polyseme':
-            color = 'green'
-        elif label == 'Intra-class polyseme':
-            color = 'blue'
-        else:
-            color = None
+    y1 = np.mean(y_monoseme, axis=0)
+    y2 = np.mean(y_interclass, axis=0)
+    y3 = np.mean(y_intraclass, axis=0)
+    x = range(1, np.shape(y_monoseme)[1] + 1)
+    y1_label = 'Monosemes'
+    y2_label = 'Interclass polysemes'
+    y3_label = 'Intraclass polysemes'
+    x_label = 'Component'
+    y_label = 'Variance'
+    min_y = 0
 
-        xs.append(x)
-        ys.append(y)
-        labels.append(label)
-        colors.append(color)
+    plot_line_plot(x, y1, y2, y3, y1_label, y2_label, y3_label, x_label, y_label, min_y=min_y, figure_name=figure_name)
 
-    figure_name = f'{figure_name_prefix}_eigenvalues'
-    figure_size = None  # (9, 3)
-    plot_multiple_scatterplots(xs, ys, labels, colors, figure_name=figure_name, figure_size=figure_size)
+
+# def visualize_variance(point_cloud, figure_name):
+#     xs, ys, labels, colors = list(), list(), list(), list()
+#
+#     for query in point_cloud.queries:
+#         y = query.neighborhood_variance
+#         x = range(1, len(y) + 1)
+#         label = query.word_type
+#         if label == 'Monoseme':
+#             color = 'red'
+#         elif label == 'Interclass polyseme':
+#             color = 'green'
+#         elif label == 'Intraclass polyseme':
+#             color = 'blue'
+#         else:
+#             color = None
+#
+#         xs.append(x)
+#         ys.append(y)
+#         labels.append(label)
+#         colors.append(color)
+#
+#     figure_name = f'{figure_name}_eigenvalues'
+#     figure_size = None  # (9, 3)
+#     plot_multiple_scatterplots(xs, ys, labels, colors, figure_name=figure_name, figure_size=figure_size)
 
 
 def plot_3d_scatterplot(points, values=None, colormap=my_colormap, color_bar_label=None,
@@ -237,26 +273,26 @@ def plot_scatterplot(x, y, x_label=None, y_label=None, min_x=None, max_x=None, m
         plt.show()
 
 
-def plot_multiple_scatterplots(xs, ys, labels, colors, x_label=None, y_label=None, figure_name=None, figure_size=None):
-    fig, ax = plt.subplots(figsize=figure_size)
-
-    for x, y, label, color in zip(xs, ys, labels, colors):
-        ax.scatter(x, y, 10, label=label, color=color)
-
-    ax.set_xlabel(x_label, fontsize=label_font_size)
-    ax.set_ylabel(y_label, fontsize=label_font_size)
-
-    ax.legend()
-    handles, labels = ax.get_legend_handles_labels()
-    unique = dict(zip(labels, handles))
-    ax.legend(unique.values(), unique.keys())
-
-    if figure_name is not None:
-        figure_path = os.path.join(results_directory, f'{figure_name}.png')
-        plt.savefig(figure_path, dpi=300)
-        plt.close()
-    else:
-        plt.show()
+# def plot_multiple_scatterplots(xs, ys, labels, colors, x_label=None, y_label=None, figure_name=None, figure_size=None):
+#     fig, ax = plt.subplots(figsize=figure_size)
+#
+#     for x, y, label, color in zip(xs, ys, labels, colors):
+#         ax.scatter(x, y, 10, label=label, color=color)
+#
+#     ax.set_xlabel(x_label, fontsize=label_font_size)
+#     ax.set_ylabel(y_label, fontsize=label_font_size)
+#
+#     ax.legend()
+#     handles, labels = ax.get_legend_handles_labels()
+#     unique = dict(zip(labels, handles))
+#     ax.legend(unique.values(), unique.keys())
+#
+#     if figure_name is not None:
+#         figure_path = os.path.join(results_directory, f'{figure_name}.png')
+#         plt.savefig(figure_path, dpi=300)
+#         plt.close()
+#     else:
+#         plt.show()
 
 
 def plot_line_plot(x, y1, y2=None, y3=None, y1_label=None, y2_label=None, y3_label=None, x_label=None, y_label=None,
@@ -300,52 +336,3 @@ def plot_line_plot(x, y1, y2=None, y3=None, y1_label=None, y2_label=None, y3_lab
         plt.close()
     else:
         plt.show()
-
-# def plot_two_line_plots(x, y1, y2, x_label=None, y_label=None, min_x=None, max_x=None, min_y=None, max_y=None,
-#                         use_x_log_scale=False, use_y_log_scale=False, plot_y_equals_x=False, a=None,
-#                         figure_name=None, figure_size=None):
-#     fig, ax = plt.subplots(figsize=figure_size)
-#
-#     if use_x_log_scale:
-#         plt.xscale('log')
-#     if use_y_log_scale:
-#         plt.yscale('log')
-#
-#     if plot_y_equals_x:
-#         ax.plot([min_x, max_x], [min_y, max_y], linestyle='-', color=red)
-#
-#     if a is not None:
-#         ax.plot([min_x, max_x], [a, a], linestyle='-', color=red)
-#
-#     ax.plot(x, y1, color=blue, marker='o', linestyle=':', markersize=4)
-#     ax.plot(x, y2, color=purple, marker='o', linestyle=':', markersize=4)
-#     ax.set_xlabel(x_label, fontsize=label_font_size)
-#     ax.set_ylabel(y_label, fontsize=label_font_size)
-#     ax.set_xlim(min_x, max_x)
-#     ax.set_ylim(min_y, max_y)
-#
-#     if figure_name is not None:
-#         figure_path = os.path.join(results_directory, f'{figure_name}.png')
-#         plt.savefig(figure_path, dpi=300)
-#         plt.close()
-#     else:
-#         plt.show()
-
-# if type(values[0]) is not np.str_:
-#     scatter = ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=values, cmap=colormap)
-#
-#     if not hide_color_bar:
-#         fig.colorbar(scatter).set_label(color_bar_label, fontsize=label_font_size)
-#
-# else:
-#     regular = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'regular'])
-#     boundary = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'boundary'])
-#     singular = np.array([points[i] for i in range(np.shape(points)[0]) if values[i] == 'singular'])
-#
-#     if np.shape(boundary)[0] > 0:
-#         ax.scatter(boundary[:, 0], boundary[:, 1], boundary[:, 2], c=purple, label='boundary')
-#     if np.shape(regular)[0] > 0:
-#         ax.scatter(regular[:, 0], regular[:, 1], regular[:, 2], c=blue, label='regular')
-#     if np.shape(singular)[0] > 0:
-#         ax.scatter(singular[:, 0], singular[:, 1], singular[:, 2], c=red, label='singular')
-#     ax.legend()

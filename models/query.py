@@ -23,7 +23,7 @@ class Query:
         self._original_neighborhood_thickness = None
         self._translated_neighborhood_thickness = None
 
-        self._neighborhood_eigenvalues = None
+        self._neighborhood_variance = None
 
         self._word = word
         self._word_type = word_type
@@ -106,12 +106,12 @@ class Query:
         self._translated_neighborhood_thickness = translated_neighborhood_thickness
 
     @property
-    def neighborhood_eigenvalues(self):
-        return self._neighborhood_eigenvalues
+    def neighborhood_variance(self):
+        return self._neighborhood_variance
 
-    @neighborhood_eigenvalues.setter
-    def neighborhood_eigenvalues(self, neighborhood_eigenvalues):
-        self._neighborhood_eigenvalues = neighborhood_eigenvalues
+    @neighborhood_variance.setter
+    def neighborhood_variance(self, neighborhood_variance):
+        self._neighborhood_variance = neighborhood_variance
 
     @property
     def word(self):

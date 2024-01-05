@@ -35,7 +35,7 @@ def get_neighborhood_thickness(neighborhood):
             point1 = neighborhood[i]
             point2 = neighborhood[j]
 
-            cosine_similarity = np.dot(point1, point2) / (np.linalg.norm(point1) * np.linalg.norm(point2))
+            cosine_similarity = compute_cosine_similarity(point1, point2)
             angle_in_degrees = math.degrees(math.acos(cosine_similarity))
             neighborhood_thickness = max(neighborhood_thickness, angle_in_degrees)
 

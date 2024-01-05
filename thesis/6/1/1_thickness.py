@@ -3,19 +3,19 @@ import winsound
 from models.point_cloud import *
 from methods.neighborhood_thickness import *
 
-k = 200
+k = 300
 embeddings_paths = [word2vec_embeddings_path, fasttext_embeddings_path, glove_embeddings_path]
 filename_prefixes = ['word2vec', 'fasttext', 'glove']
-neighborhood_sizes = [100]#range(10, 110, 10)
+neighborhood_sizes = [10 * (i + 1) for i in range(20)]
 
-for embeddings_path, filename_prefix in zip(embeddings_paths, filename_prefixes):
+for i, (embeddings_path, filename_prefix) in enumerate(zip(embeddings_paths, filename_prefixes)):
 
     point_cloud = PointCloud()
     point_cloud.embeddings_constructor(embeddings_path, k)
 
     for neighborhood_size in neighborhood_sizes:
-        filename = f'{filename_prefix}_{neighborhood_size}'
+        filename = f'{i + 1}_{filename_prefix}_{neighborhood_size}'
         calculate(point_cloud, neighborhood_size, filename)
-        tabulate_neighborhood_thickness(point_cloud, filename)
+        visualize_thickness(point_cloud, filename)
 
 winsound.Beep(500, 3000)
