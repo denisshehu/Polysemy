@@ -7,12 +7,13 @@ r = 1
 seed = 1
 ambient_dimension = 300
 
-neighborhood_sizes = [100 if d < 6 else 50 for d in intrinsic_dimension_values]
+neighborhood_size = 60
+# neighborhood_sizes = [100 if d < 6 else 50 for d in intrinsic_dimension_values]
 threshold = 0.1
 n_steps = 10
 
 estimations = list()
-for intrinsic_dimension, neighborhood_size in zip(intrinsic_dimension_values, neighborhood_sizes):
+for intrinsic_dimension in intrinsic_dimension_values:
     prefix = f'd{intrinsic_dimension}_k{neighborhood_size}'
     maximum_dimension = intrinsic_dimension + 1
 

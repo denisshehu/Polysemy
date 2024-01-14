@@ -85,6 +85,18 @@ def sample_from_intersecting_spheres(n1, intrinsic_dimension1, r1, n2, intrinsic
     points = np.row_stack((sphere1, sphere2))
     return points
 
+
+def figure(n1, s1, r1, seed1, n2, s2, r2, seed2, proportion):
+    intrinsic_dimension = 2
+    annulus1 = sample_from_annulus(n1, intrinsic_dimension, s1, r1, seed1)
+    annulus2 = sample_from_annulus(n2, intrinsic_dimension, s2, r2, seed2)
+
+    for point in annulus2:
+        point[1] += proportion * (s1 + s2)
+
+    points = np.row_stack((annulus1, annulus2))
+    return points
+
 # def sample_from_pinched_torus(n, spacial_dimension, large_r, small_max_r, small_min_r, seed):
 #     data = []
 #

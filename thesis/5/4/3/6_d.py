@@ -3,7 +3,7 @@ import winsound
 from methods.euclidicity import *
 from models.point_cloud import *
 
-n = 50 + 2
+n = 70 + 2
 n1 = n // 2
 intrinsic_dimension = 10
 upper_bounds = [i for i in range(2, 11)]
@@ -43,7 +43,7 @@ for upper_bound in upper_bounds:
         summary[i].append([query.euclidicity for query in point_cloud.queries][0])
 
 y1_label, y2_label, y3_label = 'regular', 'singular (cones)', 'singular (planes)'
-x_label = 'Intrinsic dimension'
+x_label = 'Upper bound'
 y_label = 'Euclidicity score'
 figure_name = f'summary_d{upper_bounds[0]}_{upper_bounds[-1]}'
 plot_line_plot(upper_bounds, summary[0], summary[1], summary[2], y1_label, y2_label, y3_label, x_label, y_label,
