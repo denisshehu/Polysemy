@@ -23,15 +23,14 @@ def estimate_in_parallel(point_cloud, neighborhood_size, maximum_dimension, min_
 
 def _estimate(query, query_annuli, maximum_dimension):
     estimates = list()
-    for annulus, s, r in query_annuli:
+    for annulus, _, _ in query_annuli:
         if len(annulus) != 0:
             persistence_diagrams = ripser.ripser(X=annulus, maxdim=(maximum_dimension - 1))['dgms']
-            estimates.append(get_estimate(persistence_diagrams))
+            with open('C:\\Users\\its_d\\Desktop\\a.txt', 'w') as file:
+                file.write(str(persistence_diagrams))
+            for i in range(len(persistence_diagrams) - 1, -1, -1):
+                if len(persistence_diagrams[i]) > 0:
+                    estimates.append(i + 1)
+                    break
 
     return query.identifier, estimates
-
-
-def get_estimate(persistence_diagrams):
-    for i in range(len(persistence_diagrams) - 1, -1, -1):
-        if len(persistence_diagrams[i]) > 0:
-            return i + 1

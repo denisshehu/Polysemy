@@ -25,13 +25,14 @@ def _estimate(query, query_annuli, maximum_dimension):
     estimates = list()
     for annulus, s, r in query_annuli:
         if len(annulus) != 0:
-            persistence_diagrams = ripser.ripser(X=annulus, maxdim=(maximum_dimension - 1))['dgms']
-            estimates.append(get_estimate(persistence_diagrams))
+            scaled_annulus = scale(annulus, query.point, s)
+            persistence_diagrams = ripser.ripser(X=scaled_annulus, maxdim=(maximum_dimension - 1))['dgms']
+            for i in range(len(persistence_diagrams) - 1, -1, -1):
+                if len(persistence_diagrams[i]) > 0:
+                    estimates.append(i + 1)
+                    # with open('C:\\Users\\its_d\\Desktop\\a.txt', 'a') as file:
+                    #     file.write(f'{i + 1}\n')
+                    #     file.write(f'{str(persistence_diagrams)}\n\n')
+                    break
 
     return query.identifier, estimates
-
-
-def get_estimate(persistence_diagrams):
-    for i in range(len(persistence_diagrams) - 1, -1, -1):
-        if len(persistence_diagrams[i]) > 0:
-            return i + 1

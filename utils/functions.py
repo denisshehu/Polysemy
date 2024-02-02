@@ -28,7 +28,7 @@ def scale(points, origin, scaler):
     return points
 
 
-def filter_persistence_diagrams_dynamic(persistence_diagrams):
+def filter_persistence_diagrams_dynamically(persistence_diagrams):
     filtered_persistence_diagrams = list()
 
     threshold = 0.0
@@ -54,7 +54,7 @@ def filter_persistence_diagrams_dynamic(persistence_diagrams):
     return filtered_persistence_diagrams
 
 
-def filter_persistence_diagrams_constant(persistence_diagrams, threshold):
+def filter_persistence_diagrams_statically(persistence_diagrams, threshold):
     filtered_persistence_diagrams = list()
 
     for persistence_diagram in persistence_diagrams:
