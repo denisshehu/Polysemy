@@ -88,14 +88,14 @@ def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plot
                         colormap=my_colormap, color_bar_min=None, color_bar_max=None, elev=None, azim=None, roll=None,
                         hide_x_tick_labels=True, hide_y_tick_labels=True, hide_z_tick_labels=True,
                         hide_color_bar=False, hide_legend=True, is_30_to_45=False):
-    figure_size1, pad1, point_size1, figure_size2, pad2, point_size2 = (4.9, 2.5), 0.4, 10, (4.9, 3), 2.1, 10
+    figure_size1, pad1, point_size1, figure_size2, pad2, point_size2 = (4.9, 2.5), 0.4, 10, (4.9, 2.5), 0.6, 10
 
     attribute = 'intrinsic_dimension'
     _visualize_attribute(point_cloud, attribute, figure_name_prefix, colormap, color_bar_min, color_bar_max,
                          elev, azim, roll, hide_x_tick_labels, hide_y_tick_labels, hide_z_tick_labels, hide_color_bar,
                          hide_legend, figure_size1, pad1, point_size1, figure_size2, pad2, point_size2)
 
-    # Individual plots
+    # Individual figures
     if include_individual_plots:
         for query in point_cloud.queries:
             min_x, max_x, min_y, max_y = None, None, None, None
@@ -117,8 +117,8 @@ def visualize_dimension(point_cloud, figure_name_prefix, include_individual_plot
                 x_ticks = [30, 35, 40, 45] if is_30_to_45 else None
 
                 plot_line_plot(x, y, x_label=x_label, y_label=y_label, min_x=min_x, max_x=max_x, min_y=min_y,
-                               max_y=max_y, a=known_dimension, figure_name=figure_name, figure_size=figure_size2,
-                               pad=pad2, point_size=point_size, line_width=line_width, save_space=save_space,
+                               max_y=max_y, a=known_dimension, figure_name=figure_name, figure_size=(4.9, 3),
+                               pad=2.1, point_size=point_size, line_width=line_width, save_space=save_space,
                                x_ticks=x_ticks)
 
 
